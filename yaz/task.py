@@ -17,7 +17,28 @@ class Task:
         self.func = func
         self.config = config
 
-    def get(self, key, default = None):
+    def __call__(self, **kwargs):
+        """Prepare dependencies and call this Task"""
+        if self.plugin:
+            if not self.plugin_instance:
+                # todo: prepare dependencies
+                self.plugin_instance = self.plugin()
+            return self.func(self.plugin_instance, **kwargs)
+
+        else:
+            return self.func(**kwargs)
+
+    def get_parameters(self):
+        """Returns a list of parameters"""
+        sig = inspect.signature(self.func)
+        for index, parameter in enumerate(sig.parameters.values()):
+            if index == 0 and self.plugin is not None:
+                # skip SELF parameter
+                continue
+
+            yield parameter
+
+    def get_configuration(self, key, default = None):
         """Returns the configuration for KEY"""
         if key in self.config:
             value = self.config.get(key)
@@ -29,17 +50,6 @@ class Task:
 
         else:
             return default
-
-    def __call__(self, **kwargs):
-        """Prepare dependencies and call this Task"""
-        if self.plugin:
-            if not self.plugin_instance:
-                # todo: prepare dependencies
-                self.plugin_instance = self.plugin()
-            return self.func(self.plugin_instance, **kwargs)
-
-        else:
-            return self.func(**kwargs)
 
     def get_documentation(self):
         """Returns a (short-doc, long-doc) tuple"""

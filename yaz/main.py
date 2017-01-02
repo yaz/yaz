@@ -1,8 +1,7 @@
 import sys
 
-from .task import get_task_tree
-from .plugin import Plugin
 from .parser import Parser
+from .task import get_task_tree
 
 def main():
     parser = Parser()
@@ -10,4 +9,6 @@ def main():
 
     task, kwargs = parser.parse_arguments(sys.argv[1:])
     if task:
-        print(task(**kwargs))
+        result = task(**kwargs)
+        if result is not None:
+            print(result)
