@@ -3,6 +3,8 @@ import collections
 import re
 
 class Plugin:
+    _yaz_plugin_cache = {}
+
     @classmethod
     def get_yaz_plugin_ordinal(cls, default=128):
         patterns = [
@@ -30,13 +32,15 @@ class Plugin:
     def __new__(cls):
         signature = inspect.signature(cls.__init__)
 
-        # set default parameters for Plugin classes
+        # initialize plugin dependencies
         kwargs = {}
         for parameter in signature.parameters.values():
             if parameter.default is parameter.empty and\
                parameter.kind is parameter.POSITIONAL_OR_KEYWORD and\
                issubclass(parameter.annotation, Plugin):
-                kwargs[parameter.name] = parameter.annotation()
+                if parameter.annotation not in cls._yaz_plugin_cache:
+                    cls._yaz_plugin_cache[parameter.annotation] = parameter.annotation()
+                kwargs[parameter.name] = cls._yaz_plugin_cache[parameter.annotation]
 
         if kwargs:
             init = cls.__init__

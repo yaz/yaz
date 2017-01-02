@@ -13,11 +13,22 @@ class Food(Plugin):
     def __init__(self, dummy: Dummy):
         self.dummy = dummy
 
+class Drink(Plugin):
+    def __init__(self, dummy: Dummy):
+        self.dummy = dummy
+
 if __name__ == "__main__":
     def food():
         food = Food()
         print(food, food.dummy)
 
+    def drink():
+        drink = Drink()
+        print(drink, drink.dummy)
+
+    food()
+    drink()
+    drink()
     food()
     food()
-    food()
+    drink()
