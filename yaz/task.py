@@ -8,21 +8,20 @@ from .decorator import decorator
 from .plugin import Plugin
 
 class Task:
-    def __init__(self, plugin, func, config):
-        assert plugin is None or issubclass(plugin, Plugin)
+    def __init__(self, plugin_class, func, config):
+        assert plugin_class is None or issubclass(plugin_class, Plugin)
         assert callable(func)
         assert isinstance(config, dict)
-        self.plugin = plugin
+        self.plugin_class = plugin_class
         self.plugin_instance = None
         self.func = func
         self.config = config
 
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
-        if self.plugin:
+        if self.plugin_class:
             if not self.plugin_instance:
-                # todo: prepare dependencies
-                self.plugin_instance = self.plugin()
+                self.plugin_instance = self.plugin_class()
             return self.func(self.plugin_instance, **kwargs)
 
         else:
@@ -32,7 +31,7 @@ class Task:
         """Returns a list of parameters"""
         sig = inspect.signature(self.func)
         for index, parameter in enumerate(sig.parameters.values()):
-            if index == 0 and self.plugin is not None:
+            if index == 0 and self.plugin_class is not None:
                 # skip SELF parameter
                 continue
 
@@ -67,8 +66,8 @@ class Task:
         return "", ""
 
     def __repr__(self):
-        if self.plugin:
-            return "<{self.__class__.__name__} {self.plugin.__qualname__}:{self.func.__qualname__}>".format(self=self)
+        if self.plugin_class:
+            return "<{self.__class__.__name__} {self.plugin_class.__qualname__}:{self.func.__qualname__}>".format(self=self)
         else:
             return "<{self.__class__.__name__} {self.func.__qualname__}>".format(self=self)
 
@@ -87,7 +86,7 @@ def get_task_tree():
 
         for _, func in inspect.getmembers(plugin):
             if inspect.isfunction(func) and hasattr(func, "yaz_config"):
-                node[func.__name__] = Task(plugin=plugin, func=func, config=func.yaz_config)
+                node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_config)
 
     return tree
 
@@ -132,7 +131,7 @@ def task(func, **config):
         #                           dict(plugin=self, task=func, duration=stop - start)))
     if func.__name__ == func.__qualname__:
         assert not func.__qualname__ in _task_list, "Can not define the same task {} twice".format(func.__qualname__)
-        _task_list[func.__qualname__] = Task(plugin=None, func=func, config=config)
+        _task_list[func.__qualname__] = Task(plugin_class=None, func=func, config=config)
     else:
         func.yaz_config = config
 
