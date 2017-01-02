@@ -8,13 +8,18 @@ class Parser(argparse.ArgumentParser):
         kwargs["formatter_class"] = argparse.RawDescriptionHelpFormatter
         super().__init__(*args, **kwargs)
 
-    def _format_name(self, name, prefix="", postfix=""):
+    def _format_name(self, name:str, prefix:str="", postfix:str=""):
         return "".join([prefix, name.replace("_", "-").lower(), postfix])
 
     def _add_task(self, parser, task):
-        for parameter in task.get_parameters():
-            parser.set_defaults(yaz_task=task)
+        if __debug__:
+            from .task import Task
+            assert isinstance(parser, Parser)
+            assert isinstance(task, Task)
 
+        parser.set_defaults(yaz_task=task)
+
+        for parameter in task.get_parameters():
             args = (self._format_name(parameter.name),)
             kwargs = {
                 "help": task.get_configuration("{}__help".format(parameter.name)),

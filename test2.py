@@ -12,6 +12,10 @@ def bar(message):
     return "BAR: {}".format(message)
 
 @task
+def moo():
+    return "Mooooo"
+
+@task
 def get_string(message:str="Hello World"):
     return message
 
