@@ -3,6 +3,7 @@ import collections
 import datetime
 import functools
 import inspect
+import asyncio
 
 from .decorator import decorator
 from .plugin import Plugin
@@ -22,10 +23,17 @@ class Task:
         if self.plugin_class:
             if not self.plugin_instance:
                 self.plugin_instance = self.plugin_class()
-            return self.func(self.plugin_instance, **kwargs)
+            result = self.func(self.plugin_instance, **kwargs)
 
         else:
-            return self.func(**kwargs)
+            result = self.func(**kwargs)
+
+        if inspect.iscoroutinefunction(self.func) and inspect.iscoroutine(result):
+            loop = asyncio.get_event_loop()
+            result = loop.run_until_complete(result)
+            loop.close()
+
+        return result
 
     def get_parameters(self):
         """Returns a list of parameters"""
