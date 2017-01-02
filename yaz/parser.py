@@ -10,7 +10,11 @@ class Parser(argparse.ArgumentParser):
 
     def _add_task(self, parser, task):
         sig = inspect.signature(task.func)
-        for parameter in sig.parameters.values():
+        for index, parameter in enumerate(sig.parameters.values()):
+            if index == 0 and not task.plugin is None:
+                # skip SELF parameter
+                continue
+
             name = parameter.name.replace("_", "-")
             kwargs = {}
             if parameter.default is parameter.empty:
@@ -43,7 +47,7 @@ class Parser(argparse.ArgumentParser):
                 elif isinstance(parameter.default, float):
                     kwargs["type"] = float
 
-            parser.set_defaults(yaz_task=task.func)
+            parser.set_defaults(yaz_task=task)
             parser.add_argument(
                 *args,
                 **dict((key, value) for key, value in kwargs.items() if not value is None))
@@ -56,7 +60,7 @@ class Parser(argparse.ArgumentParser):
             subparsers = parser.add_subparsers()
             for name, task in task.items():
                 self._add_task_tree_node(
-                    subparsers.add_parser(name),
+                    subparsers.add_parser(name.lower()),
                     task)
 
         else:
