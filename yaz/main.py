@@ -12,3 +12,6 @@ def main():
         result = task(**kwargs)
         if result is not None:
             print(result)
+
+    else:
+        parser.print_help()
