@@ -78,15 +78,21 @@ def get_task_tree():
 
     plugins = Plugin.get_yaz_plugin_list()
     for plugin in plugins.values():
+        tasks = [func
+                 for _, func
+                 in inspect.getmembers(plugin)
+                 if inspect.isfunction(func) and hasattr(func, "yaz_config")]
+        if len(tasks) == 0:
+            continue
+
         node = tree
         for name in plugin.__qualname__.split("."):
             if not name in node:
                 node[name] = {}
             node = node[name]
 
-        for _, func in inspect.getmembers(plugin):
-            if inspect.isfunction(func) and hasattr(func, "yaz_config"):
-                node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_config)
+        for func in tasks:
+            node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_config)
 
     return tree
 

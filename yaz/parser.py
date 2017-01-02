@@ -66,7 +66,7 @@ class Parser(argparse.ArgumentParser):
                 **dict((key, value) for key, value in kwargs.items() if not value is None))
 
     def _add_task_tree_node(self, parser, task):
-        if isinstance(task, dict) and len(task) == 1:
+        while isinstance(task, dict) and len(task) == 1:
             task = next(iter(task.values()))
 
         if isinstance(task, dict):
