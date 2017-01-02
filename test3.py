@@ -4,6 +4,10 @@ from yaz.task import task
 from yaz.main import main
 from yaz.plugin import Plugin
 
+class Dummy(Plugin):
+    """Plugin without tasks"""
+    pass
+
 class Food(Plugin):
     class Flavors(Plugin):
         @task
@@ -13,6 +17,9 @@ class Food(Plugin):
         @task
         def sweet(self):
             pass
+
+    def __init__(self, dummy: Dummy):
+        self.dummy = dummy
 
     @task
     def breakfast(self, message="Yes please"):
@@ -28,10 +35,6 @@ class Food(Plugin):
 
     def i_am_not_a_task(self):
         pass
-
-class Empty(Plugin):
-    """Plugin without tasks"""
-    pass
 
 if __name__ == "__main__":
     main()
