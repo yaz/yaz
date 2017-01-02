@@ -4,6 +4,11 @@ from yaz.task import task
 from yaz.main import main
 from yaz.plugin import Plugin
 
+# TODO
+class TestMyNAME(Plugin):
+    """Should be accessible as name test-my-name"""
+    pass
+
 class Dummy(Plugin):
     """Plugin without tasks"""
     pass
