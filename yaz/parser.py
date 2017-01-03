@@ -9,7 +9,14 @@ class Parser(argparse.ArgumentParser):
         super().__init__(*args, **kwargs)
 
     def _format_name(self, name:str, prefix:str="", postfix:str=""):
-        return "".join([prefix, name.replace("_", "-").lower(), postfix])
+        # todo: cleanup below code.  if does what it needs to do, but is not very pretty
+        name = re.sub(r"([^A-Z]+)([A-Z]+)", r"\1-\2", name)
+        name = re.sub(r"_", r"-", name)
+        name = re.sub(r"-[-]+", r"-", name)
+        name = re.sub(r"^[-]+", r"", name)
+        name = re.sub(r"[-]+$", r"", name)
+
+        return "".join([prefix, name.lower(), postfix])
 
     def _add_task(self, parser, task):
         if __debug__:

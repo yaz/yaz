@@ -4,10 +4,43 @@ from yaz.task import task
 from yaz.main import main
 from yaz.plugin import Plugin
 
-# TODO
 class TestMyNAME(Plugin):
     """Should be accessible as name test-my-name"""
-    pass
+    @task
+    def _ignore_first_underscore(self):
+        pass
+
+    @task
+    def __ignore_first_underscores(self):
+        pass
+
+    @task
+    def ignore_last_underscore_(self):
+        pass
+
+    @task
+    def ignore_last_underscores__(self):
+        pass
+
+    @task
+    def _ignore_underscore_(self):
+        pass
+
+    @task
+    def __ignore_underscores__(self):
+        pass
+
+    @task
+    def LOWER_CASE(self):
+        pass
+
+    @task
+    def FooBar(self):
+        pass
+
+    @task
+    def fooBar2(self):
+        pass
 
 class Dummy(Plugin):
     """Plugin without tasks"""
