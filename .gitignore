@@ -1,3 +1,5 @@
-/yaz/__pycache__/*
 *~
-yaz.egg-info
+/.coverage
+/cover/
+/yaz.egg-info
+__pycache__
