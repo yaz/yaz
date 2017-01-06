@@ -6,7 +6,7 @@ class Plugin:
     _yaz_plugin_cache = {}
 
     @classmethod
-    def get_yaz_plugin_ordinal(cls, default=128):
+    def get_yaz_plugin_ordinal(cls):
         patterns = [
             (512, '^yaz[.]plugins[.]'),
             (256, '^__main__[.]'),
@@ -14,7 +14,7 @@ class Plugin:
         for ordinal, pattern in patterns:
             if re.match(pattern, "{cls.__module__}.{cls.__qualname__}".format(cls=cls)):
                 return ordinal
-        return default
+        return 128
 
     @classmethod
     def get_yaz_plugin_list(cls):
