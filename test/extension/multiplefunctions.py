@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 # in the context of nosetests `import yaz` is not available
-from yaz import yaz
+try:
+    from yaz import yaz
+except ImportError:
+    import yaz
 
 @yaz.task
 def foo():

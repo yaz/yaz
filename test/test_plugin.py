@@ -2,8 +2,8 @@ import unittest
 
 from ..yaz.plugin import Plugin
 
-from test.dependencyinjection import Food, MoreFood
-import test.pluginordinal
+from test.extension.dependencyinjection import Food, MoreFood
+import test.extension.pluginordinal
 
 class TestPlugin(unittest.TestCase):
     def testDepencencyInjection(self):

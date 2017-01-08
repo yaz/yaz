@@ -98,5 +98,5 @@ class Parser(argparse.ArgumentParser):
     def parse_arguments(self, argv):
         assert isinstance(argv, list)
         assert all(isinstance(arg, str) for arg in argv)
-        kwargs = vars(self.parse_args(argv))
+        kwargs = vars(self.parse_args(argv[1:]))
         return kwargs.pop("yaz_task", None), kwargs
