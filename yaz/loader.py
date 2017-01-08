@@ -1,5 +1,6 @@
-import os.path
 import importlib
+import os.path
+import sys
 
 def load(directory_name, module_name):
     """Try to load and return a module
@@ -11,7 +12,7 @@ def load(directory_name, module_name):
     """
     directory_name = os.path.expanduser(directory_name)
     if os.path.isdir(directory_name) and directory_name not in sys.path:
-        sys.path.append(extension_directory)
+        sys.path.append(directory_name)
 
     try:
         return importlib.import_module(module_name)
