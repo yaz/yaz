@@ -32,7 +32,6 @@ class Task:
             assert inspect.iscoroutine(result), "The task is defined as a coroutine function but does not return a coroutine"
             loop = asyncio.get_event_loop()
             result = loop.run_until_complete(result)
-            loop.close()
 
         return result
 
