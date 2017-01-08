@@ -2,29 +2,44 @@ import inspect
 import collections
 import re
 
-class Plugin:
+class Final:
+    @staticmethod
+    def yaz_is_final():
+        return True
+
+class BasePlugin:
     _yaz_plugin_cache = {}
 
-    @classmethod
-    def get_yaz_plugin_ordinal(cls):
-        patterns = [
-            (512, '^yaz[.]plugins[.]'),
-            (256, '^__main__[.]'),
-        ]
-        for ordinal, pattern in patterns:
-            if re.match(pattern, "{cls.__module__}.{cls.__qualname__}".format(cls=cls)):
-                return ordinal
+    @staticmethod
+    def yaz_is_final():
+        return False
+
+    @staticmethod
+    def yaz_get_ordinal():
+        # typically used from a yaz_foo_plugin
         return 128
 
     @classmethod
     def get_yaz_plugin_list(cls):
-        # find all Plugin classes
-        plugin_list = collections.defaultdict(list)
-        for plugin in cls.__subclasses__():
-            plugin_list[plugin.__qualname__].append(plugin)
+        def get_recursively(cls, plugin_list):
+            for plugin in cls.__subclasses__():
+                if not plugin.yaz_is_final():
+                    plugin_list[plugin.__qualname__].append(plugin)
+                get_recursively(plugin, plugin_list)
+            return plugin_list
+
+        def get_plugin_type(qualname, plugins):
+            classes = sorted(plugins, key=lambda plugin: plugin.yaz_get_ordinal())
+            return type(qualname, (Final,) + tuple(classes), {})
+
+        # find all Plugin classes recursively
+        plugin_list = get_recursively(cls, collections.defaultdict(list))
+
+        # for qualname, plugins in plugin_list.items():
+        #     print("new pugin", qualname, [plugin.__module__ for plugin in sorted(plugins, key=lambda plugin: plugin.yaz_get_ordinal())])
 
         # combine all classes into their Plugin class (i.e. multiple inherited plugin)
-        return dict((qualname, type(qualname, tuple(sorted(plugins, key=lambda plugin: plugin.get_yaz_plugin_ordinal())), {}))
+        return dict((qualname, get_plugin_type(qualname, plugins))
                     for qualname, plugins
                     in plugin_list.items())
 
@@ -47,3 +62,13 @@ class Plugin:
             cls.__init__ = lambda self: init(self, **kwargs)
 
         return super().__new__(cls)
+
+class Plugin(BasePlugin):
+    def yaz_get_ordinal():
+        # typically used from a project configuration
+        return 256
+
+class CustomPlugin(Plugin):
+    def yaz_get_ordinal():
+        # typically used from a custom user configuration
+        return 512

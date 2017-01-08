@@ -6,11 +6,11 @@ import inspect
 import asyncio
 
 from .decorator import decorator
-from .plugin import Plugin
+from .plugin import BasePlugin
 
 class Task:
     def __init__(self, plugin_class, func, config):
-        assert plugin_class is None or issubclass(plugin_class, Plugin)
+        assert plugin_class is None or issubclass(plugin_class, BasePlugin)
         assert callable(func)
         assert isinstance(config, dict)
         self.plugin_class = plugin_class
@@ -85,7 +85,7 @@ _task_list = {}
 def get_task_tree():
     tree = _task_list.copy()
 
-    plugins = Plugin.get_yaz_plugin_list()
+    plugins = BasePlugin.get_yaz_plugin_list()
     for plugin in plugins.values():
         tasks = [func
                  for _, func

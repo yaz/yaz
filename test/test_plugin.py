@@ -1,6 +1,6 @@
 import unittest
 
-from ..yaz.plugin import Plugin
+from ..yaz.plugin import BasePlugin
 
 from test.extension.dependencyinjection import Food, MoreFood
 import test.extension.pluginordinal
@@ -18,6 +18,6 @@ class TestPlugin(unittest.TestCase):
 
     def testPluginCreationOrdinal(self):
         """Should follow the ordinal when creating the plugin type"""
-        plugins = Plugin.get_yaz_plugin_list()
+        plugins = BasePlugin.get_yaz_plugin_list()
         Ordinal = plugins["Ordinal"]
-        assert Ordinal().stack() == ["low (8)", "default (128)", "high (1024)"]
+        assert Ordinal().stack() == ["low (8)", "base (128)", "default (256)", "custom (512)", "high (1024)"]

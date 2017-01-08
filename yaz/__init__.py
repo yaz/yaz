@@ -1,3 +1,3 @@
 from .main import main
-from .plugin import Plugin
+from .plugin import BasePlugin, Plugin, CustomPlugin
 from .task import task
