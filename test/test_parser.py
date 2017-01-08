@@ -11,6 +11,7 @@ import test.extension.singlemethod
 import test.extension.multiplemethods
 import test.extension.namingconvention
 import test.extension.typeannotation
+import test.extension.taskconfiguration
 
 class TestParser(unittest.TestCase):
     def _get_task_tree(self, white_list):
@@ -163,3 +164,16 @@ class TestParser(unittest.TestCase):
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float", "--number", "0.5"])
         self.assertEqual(0.5, task(**kwargs))
+
+    def test_choices_configuration(self):
+        """Should accept predefined choices"""
+        parser = Parser()
+        parser.add_task_tree(self._get_task_tree(["ConfigurationPlugin"]))
+
+        # using available choice
+        task, kwargs = parser.parse_arguments([sys.argv[0], "required-choice", "yes"])
+        self.assertTrue(task(**kwargs))
+
+        # using unavailable choice
+        self.assertRaises(SystemExit, parser.parse_arguments, [sys.argv[0], "required-choice", "unavailable"])
+

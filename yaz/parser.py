@@ -30,7 +30,7 @@ class Parser(argparse.ArgumentParser):
             args = (self._format_name(parameter.name),)
             kwargs = {
                 "help": task.get_configuration("{}__help".format(parameter.name)),
-                "choices": task.get_configuration("{}__choices".format(parameter.name))
+                "choices": task.get_configuration("{}__choices".format(parameter.name)),
             }
 
             if parameter.default is not parameter.empty:
@@ -84,8 +84,9 @@ class Parser(argparse.ArgumentParser):
         if isinstance(task, dict):
             subparsers = parser.add_subparsers()
             for name, task in sorted(task.items()):
+                description = None if isinstance(task, dict) else task.documentation.full
                 self._add_task_tree_node(
-                    subparsers.add_parser(self._format_name(name)),
+                    subparsers.add_parser(self._format_name(name), description=description),
                     task)
 
         else:

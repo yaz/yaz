@@ -9,6 +9,26 @@ from .decorator import decorator
 from .plugin import BasePlugin
 
 class Task:
+    class Documentation:
+        def __init__(self, full):
+            if full:
+                # long = self.yaz.render(doc, dict(plugin=plugin))
+                match = re.match("^(?P<first_line>.+)\n\n(?P<everything_else>.+)$", full)
+                if match:
+                    short = match.group("first_line")
+                    long = match.group("everything_else")
+                else:
+                    short = full
+                    long = ""
+            else:
+                full = ""
+                short = ""
+                long = ""
+
+            self.full = full.strip()
+            self.short = short.strip()
+            self.long = long.strip()
+
     def __init__(self, plugin_class, func, config):
         assert plugin_class is None or issubclass(plugin_class, BasePlugin)
         assert callable(func)
@@ -17,6 +37,7 @@ class Task:
         self.plugin_instance = None
         self.func = func
         self.config = config
+        self.documentation = self.Documentation(inspect.getdoc(self.func))
 
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
@@ -48,36 +69,9 @@ class Task:
     def get_configuration(self, key, default = None):
         """Returns the configuration for KEY"""
         if key in self.config:
-            value = self.config.get(key)
-
-            if callable(value):
-                return value(self)
-
-            return value
-
+            return self.config.get(key)
         else:
             return default
-
-    def get_documentation(self):
-        """Returns a (short-doc, long-doc) tuple"""
-        doc = inspect.getdoc(self.func)
-        if doc:
-            # long = self.yaz.render(doc, dict(plugin=plugin))
-            long = doc
-            match = re.match("^(?P<first_line>.+)\n?", long)
-            if match:
-                short = match.group("first_line")
-            else:
-                short = long
-                long = ""
-            return short.strip(), long.strip()
-        return "", ""
-
-    def __repr__(self):
-        if self.plugin_class:
-            return "<{self.__class__.__name__} {self.plugin_class.__qualname__}:{self.func.__qualname__}>".format(self=self)
-        else:
-            return "<{self.__class__.__name__} {self.func.__qualname__}>".format(self=self)
 
 _task_list = {}
 
