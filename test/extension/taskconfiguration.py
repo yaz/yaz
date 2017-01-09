@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
-# in the context of nosetests `import yaz` is not available
-try:
-    from yaz import yaz
-except ImportError:
-    import yaz
+import yaz
 
 class ConfigurationPlugin(yaz.Plugin):
     """TODO: This is the documentation string for the ConfigurationPlugin"""

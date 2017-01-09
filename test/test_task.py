@@ -3,9 +3,9 @@ import sys
 import unittest
 import asyncio
 
-from ..yaz.parser import Parser
-from ..yaz.plugin import Plugin
-from ..yaz.task import get_task_tree
+from .context import yaz
+from yaz.parser import Parser
+from yaz.task import get_task_tree
 
 import test.extension.coroutine
 

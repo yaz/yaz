@@ -1,9 +1,9 @@
 import unittest
 import sys
 
-from ..yaz.loader import load
-from ..yaz.parser import Parser
-from ..yaz.task import get_task_tree
+from .context import yaz
+from yaz.parser import Parser
+from yaz.task import get_task_tree
 
 import test.extension.singlefunction
 import test.extension.multiplefunctions

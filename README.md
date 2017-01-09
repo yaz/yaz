@@ -10,15 +10,18 @@ cd yaz
 python3 setup.py install
 ```
 
-From source (for development)
+Run unit tests (for development)
+```
+git clone git@github.com:boudewijn-zicht/yaz.git
+cd yaz
+make test
+```
+
+Install from source (for development)
 ```
 git clone git@github.com:boudewijn-zicht/yaz.git
 cd yaz
 python3 setup.py develop
-
-# run test cases
-pip3 install nose
-nosetests --with-coverage --cover-package yaz
 ```
 
 From a package (todo: yaz is not yet a registered package)

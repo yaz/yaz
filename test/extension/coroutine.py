@@ -2,11 +2,7 @@
 
 import asyncio
 
-# in the context of nosetests `import yaz` is not available
-try:
-    from yaz import yaz
-except ImportError:
-    import yaz
+import yaz
 
 class Coroutine(yaz.Plugin):
     @yaz.task
