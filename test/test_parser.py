@@ -1,7 +1,6 @@
 import unittest
 import sys
 
-from .context import yaz
 from yaz.parser import Parser
 from yaz.task import get_task_tree
 
@@ -12,6 +11,7 @@ import test.extension.multiplemethods
 import test.extension.namingconvention
 import test.extension.typeannotation
 import test.extension.taskconfiguration
+
 
 class TestParser(unittest.TestCase):
     def _get_task_tree(self, white_list):
@@ -176,4 +176,3 @@ class TestParser(unittest.TestCase):
 
         # using unavailable choice
         self.assertRaises(SystemExit, parser.parse_arguments, [sys.argv[0], "required-choice", "unavailable"])
-

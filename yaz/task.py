@@ -1,12 +1,10 @@
 import re
-import collections
-import datetime
-import functools
 import inspect
 import asyncio
 
 from .decorator import decorator
 from .plugin import BasePlugin
+
 
 class Task:
     class Documentation:
@@ -50,7 +48,8 @@ class Task:
             result = self.func(**kwargs)
 
         if inspect.iscoroutinefunction(self.func):
-            assert inspect.iscoroutine(result), "The task is defined as a coroutine function but does not return a coroutine"
+            assert inspect.iscoroutine(
+                result), "The task is defined as a coroutine function but does not return a coroutine"
             loop = asyncio.get_event_loop()
             result = loop.run_until_complete(result)
 
@@ -66,14 +65,16 @@ class Task:
 
             yield parameter
 
-    def get_configuration(self, key, default = None):
+    def get_configuration(self, key, default=None):
         """Returns the configuration for KEY"""
         if key in self.config:
             return self.config.get(key)
         else:
             return default
 
+
 _task_list = {}
+
 
 def get_task_tree():
     tree = _task_list.copy()
@@ -97,6 +98,7 @@ def get_task_tree():
             node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_config)
 
     return tree
+
 
 @decorator
 def task(func, **config):

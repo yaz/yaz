@@ -2,6 +2,7 @@
 
 import yaz
 
+
 class ConfigurationPlugin(yaz.Plugin):
     """TODO: This is the documentation string for the ConfigurationPlugin"""
 
@@ -26,6 +27,7 @@ class ConfigurationPlugin(yaz.Plugin):
     def parameter_help(self, choice):
         # todo: needs a unit test
         pass
+
 
 if __name__ == "__main__":
     yaz.main()

@@ -2,12 +2,14 @@
 
 import yaz
 
+
 class FoodHelper(yaz.Plugin):
     def output(self, message, shout):
         if shout:
             return message.upper()
         else:
             return message
+
 
 class Food(yaz.Plugin):
     def __init__(self, helper: FoodHelper):
@@ -18,16 +20,17 @@ class Food(yaz.Plugin):
         return self.helper
 
     @yaz.task
-    def breakfast(self, message="Breakfast is ready", shout:bool=False):
+    def breakfast(self, message="Breakfast is ready", shout: bool = False):
         return self.helper.output(message, shout)
 
     @yaz.task
-    def lunch(self, message="Time for lunch", shout:bool=False):
+    def lunch(self, message="Time for lunch", shout: bool = False):
         return self.helper.output(message, shout)
 
     @yaz.task
-    def dinner(self, message="Dinner is served", shout:bool=False):
+    def dinner(self, message="Dinner is served", shout: bool = False):
         return self.helper.output(message, shout)
+
 
 class MoreFood(yaz.Plugin):
     def __init__(self, helper: FoodHelper):
@@ -40,6 +43,7 @@ class MoreFood(yaz.Plugin):
     @yaz.task
     def dummy(self):
         pass
+
 
 if __name__ == "__main__":
     yaz.main()

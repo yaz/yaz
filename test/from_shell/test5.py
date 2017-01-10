@@ -7,6 +7,7 @@ from yaz.main import main
 from yaz.plugin import Plugin
 from yaz_scripting_plugin import Scripting, SequentialScripting
 
+
 class SequentialRaw(Plugin):
     def __init__(self, scripting: SequentialScripting):
         self.scripting = scripting
@@ -47,6 +48,7 @@ class SequentialRaw(Plugin):
         ]
         for result in results:
             print(result)
+
 
 class SequentialCall(Plugin):
     def __init__(self, scripting: SequentialScripting):
@@ -102,8 +104,9 @@ class SequentialCall(Plugin):
         for result in results:
             print(result)
 
+
 class ConcurrentRaw(Plugin):
-    def __init__(self, scripting:Scripting):
+    def __init__(self, scripting: Scripting):
         self.scripting = scripting
 
     async def ls(self, message="Yes please"):
@@ -155,6 +158,7 @@ class ConcurrentRaw(Plugin):
         )
         for result in results:
             print(result)
+
 
 class ConcurrentCall(Plugin):
     def __init__(self, scripting: Scripting):
@@ -213,6 +217,7 @@ class ConcurrentCall(Plugin):
         )
         for result in results:
             print(result)
+
 
 if __name__ == "__main__":
     main()

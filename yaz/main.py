@@ -1,11 +1,11 @@
 import sys
-import os.path
 
 from .loader import load
 from .parser import Parser
 from .task import get_task_tree
 
-def main(argv = None, load_yaz_extension = True):
+
+def main(argv=None, load_yaz_extension=True):
     if load_yaz_extension:
         load("~/.yaz", "yaz_extension")
 

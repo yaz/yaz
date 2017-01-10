@@ -1,7 +1,7 @@
 import unittest
 
-from .context import yaz
 from yaz.loader import load
+
 
 class TestLoader(unittest.TestCase):
     def test_loader(self):

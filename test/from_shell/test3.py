@@ -4,8 +4,10 @@ from yaz.task import task
 from yaz.main import main
 from yaz.plugin import Plugin
 
+
 class TestMyNAME(Plugin):
     """Should be accessible as name test-my-name"""
+
     @task
     def _ignore_first_underscore(self):
         pass
@@ -42,9 +44,11 @@ class TestMyNAME(Plugin):
     def fooBar2(self):
         pass
 
+
 class Dummy(Plugin):
     """Plugin without tasks"""
     pass
+
 
 class Food(Plugin):
     class Flavors(Plugin):
@@ -73,6 +77,7 @@ class Food(Plugin):
 
     def i_am_not_a_task(self):
         pass
+
 
 if __name__ == "__main__":
     main()

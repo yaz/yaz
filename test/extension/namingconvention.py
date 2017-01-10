@@ -2,6 +2,7 @@
 
 import yaz
 
+
 class ThisWasCamelCase(yaz.Plugin):
     @yaz.task
     def this_was_underscored(self):
@@ -14,6 +15,7 @@ class ThisWasCamelCase(yaz.Plugin):
     @yaz.task
     def _this___was_also__underscored___(self):
         return "this-was-also-underscored"
+
 
 if __name__ == "__main__":
     yaz.main()

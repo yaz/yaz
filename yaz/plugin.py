@@ -1,11 +1,12 @@
 import inspect
 import collections
-import re
+
 
 class Final:
     @staticmethod
     def yaz_is_final():
         return True
+
 
 class BasePlugin:
     _yaz_plugin_cache = {}
@@ -35,24 +36,21 @@ class BasePlugin:
         # find all Plugin classes recursively
         plugin_list = get_recursively(cls, collections.defaultdict(list))
 
-        # for qualname, plugins in plugin_list.items():
-        #     print("new pugin", qualname, [plugin.__module__ for plugin in sorted(plugins, key=lambda plugin: plugin.yaz_get_ordinal())])
-
         # combine all classes into their Plugin class (i.e. multiple inherited plugin)
         return dict((qualname, get_plugin_type(qualname, plugins))
                     for qualname, plugins
                     in plugin_list.items())
 
     @staticmethod
-    def __new__(cls):
+    def __new__(cls, *args):
         signature = inspect.signature(cls.__init__)
 
         # initialize plugin dependencies
         kwargs = {}
         for parameter in signature.parameters.values():
-            if parameter.default is parameter.empty and\
-               parameter.kind is parameter.POSITIONAL_OR_KEYWORD and\
-               issubclass(parameter.annotation, Plugin):
+            if parameter.default is parameter.empty \
+                    and parameter.kind is parameter.POSITIONAL_OR_KEYWORD \
+                    and issubclass(parameter.annotation, Plugin):
                 if parameter.annotation not in cls._yaz_plugin_cache:
                     cls._yaz_plugin_cache[parameter.annotation] = parameter.annotation()
                 kwargs[parameter.name] = cls._yaz_plugin_cache[parameter.annotation]
@@ -63,12 +61,16 @@ class BasePlugin:
 
         return super().__new__(cls)
 
+
 class Plugin(BasePlugin):
+    @staticmethod
     def yaz_get_ordinal():
         # typically used from a project configuration
         return 256
 
+
 class CustomPlugin(Plugin):
+    @staticmethod
     def yaz_get_ordinal():
         # typically used from a custom user configuration
         return 512

@@ -1,13 +1,12 @@
-import time
 import sys
 import unittest
 import asyncio
 
-from .context import yaz
 from yaz.parser import Parser
 from yaz.task import get_task_tree
 
 import test.extension.coroutine
+
 
 class TestTask(unittest.TestCase):
     def __init__(self, *args, **kwargs):

@@ -2,6 +2,7 @@
 
 import yaz
 
+
 class Shape(yaz.Plugin):
     @yaz.task
     def circle(self):
@@ -10,6 +11,7 @@ class Shape(yaz.Plugin):
     @yaz.task
     def square(self):
         return "Square"
+
 
 if __name__ == "__main__":
     yaz.main()

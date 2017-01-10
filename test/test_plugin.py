@@ -1,9 +1,9 @@
 import unittest
-
-from .context import yaz
+import yaz
 
 from test.extension.dependencyinjection import Food, MoreFood
 import test.extension.pluginordinal
+
 
 class TestPlugin(unittest.TestCase):
     def test_depencency_injection(self):

@@ -1,14 +1,13 @@
 import argparse
-import inspect
 import re
-import sys
+
 
 class Parser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
         kwargs["formatter_class"] = argparse.RawDescriptionHelpFormatter
         super().__init__(*args, **kwargs)
 
-    def _format_name(self, name:str, prefix:str="", postfix:str=""):
+    def _format_name(self, name: str, prefix: str = "", postfix: str = ""):
         # todo: cleanup below code.  if does what it needs to do, but is not very pretty
         name = re.sub(r"([^A-Z]+)([A-Z]+)", r"\1-\2", name)
         name = re.sub(r"_", r"-", name)
@@ -46,13 +45,13 @@ class Parser(argparse.ArgumentParser):
                         group = parser.add_mutually_exclusive_group(required=True)
                         group.add_argument(
                             self._format_name(parameter.name, "-" if len(parameter.name) == 1 else "--"),
-                            dest = parameter.name,
+                            dest=parameter.name,
                             action="store_true",
                             help="{}, pass this flag to set to True".format(kwargs["help"])
                         )
                         group.add_argument(
                             self._format_name(parameter.name, "--no-"),
-                            dest = parameter.name,
+                            dest=parameter.name,
                             action="store_false",
                             help="{}, pass this flag to set to False".format(kwargs["help"])
                         )
