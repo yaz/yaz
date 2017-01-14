@@ -3,31 +3,49 @@
 inspired by `z`.
 
 # Installing
-From source:
+## From a package (todo: yaz is not yet a registered package)
+```
+pip3 install yaz
+```
+
+## From source:
 ```
 git clone git@github.com:boudewijn-zicht/yaz.git
 cd yaz
 python3 setup.py install
 ```
 
-Run unit tests (for development)
-```
-git clone git@github.com:boudewijn-zicht/yaz.git
-cd yaz
-make test
-```
-
-Install from source (for development)
+## From source (for development, without virtualenv)
 ```
 git clone git@github.com:boudewijn-zicht/yaz.git
 cd yaz
 python3 setup.py develop
 ```
 
-From a package (todo: yaz is not yet a registered package)
+## From source (for development, with virtualenv)
 ```
-pip3 install yaz
+# skip this step if you have a python3.5 (or higher) environment
+sudo apt-get install libssl-dev
+cd $HOME/local
+git clone https://github.com/python/cpython.git
+cd cpython
+./configure --prefix=$HOME/local
+make install
+
+# get yaz
+git clone git@github.com:boudewijn-zicht/yaz.git
+cd yaz
+
+# skip this step if you have a python3.5 (or higher) environment
+# create and activate your python3.5 (or higher) virtual env
+virtualenv --python=python3.5 env
+source env/bin/activate
+# run deactivate to exit the virtualenv
+
+# run tests
+make test
 ```
+
 
 # Expose a single function
 The most simplest usage of `yaz` is to expose a python function to be
