@@ -14,18 +14,10 @@ import test.extension.taskconfiguration
 
 
 class TestParser(unittest.TestCase):
-    def _get_task_tree(self, white_list):
-        """Helper function to only get specific tasks needed for a test"""
-        return dict(
-            (qualname, task)
-            for qualname, task
-            in get_task_tree().items()
-            if qualname in white_list)
-
     def test_single_function(self):
         """Should be available without specifying the task name"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["say"]))
+        parser.add_task_tree(get_task_tree(["say"]))
 
         # without arguments, uses default value for message
         task, kwargs = parser.parse_arguments([])
@@ -38,7 +30,7 @@ class TestParser(unittest.TestCase):
     def test_multiple_functions(self):
         """Should be available after specifying the task name"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["foo", "bar"]))
+        parser.add_task_tree(get_task_tree(["foo", "bar"]))
 
         # without arguments, can not determine the task to run
         task, kwargs = parser.parse_arguments([])
@@ -55,7 +47,7 @@ class TestParser(unittest.TestCase):
     def test_single_method(self):
         """Should be available without specifying the plugin nor the task name"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["Person"]))
+        parser.add_task_tree(get_task_tree(["Person"]))
 
         # without arguments, can not determine the task to run
         task, kwargs = parser.parse_arguments([])
@@ -64,7 +56,7 @@ class TestParser(unittest.TestCase):
     def test_multiple_methods(self):
         """Should be available without specifying the plugin name but after specifying the task name"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["Shape"]))
+        parser.add_task_tree(get_task_tree(["Shape"]))
 
         # without arguments, can not determine the task to run
         task, kwargs = parser.parse_arguments([])
@@ -81,7 +73,7 @@ class TestParser(unittest.TestCase):
     def test_multiple_plugins(self):
         """Should be available after specifying the plugin name and task name"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["Shape", "Person"]))
+        parser.add_task_tree(get_task_tree(["Shape", "Person"]))
 
         # without arguments, can not determine the task to run
         task, kwargs = parser.parse_arguments([])
@@ -102,7 +94,7 @@ class TestParser(unittest.TestCase):
     def test_naming_convention(self):
         """Should convert Plugin and task name to conform with naming conventions"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["ThisWasCamelCase", "Person"]))
+        parser.add_task_tree(get_task_tree(["ThisWasCamelCase", "Person"]))
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-underscored"])
         self.assertEqual("this-was-underscored", task(**kwargs))
@@ -116,7 +108,7 @@ class TestParser(unittest.TestCase):
     def test_boolean_type_annotation(self):
         """Should understand boolean type annotation"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["TypeAnnotation"]))
+        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "required-boolean", "--check"])
         self.assertTrue(task(**kwargs))
@@ -139,7 +131,7 @@ class TestParser(unittest.TestCase):
     def test_integer_type_annotation(self):
         """Should understand integer type annotation"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["TypeAnnotation"]))
+        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "required-integer", "123"])
         self.assertEqual(123, task(**kwargs))
@@ -153,7 +145,7 @@ class TestParser(unittest.TestCase):
     def test_float_type_annotation(self):
         """Should understand float type annotation"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["TypeAnnotation"]))
+        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "required-float", "0.5"])
         self.assertEqual(0.5, task(**kwargs))
@@ -168,7 +160,7 @@ class TestParser(unittest.TestCase):
     def test_choices_configuration(self):
         """Should accept predefined choices"""
         parser = Parser()
-        parser.add_task_tree(self._get_task_tree(["ConfigurationPlugin"]))
+        parser.add_task_tree(get_task_tree(["ConfigurationPlugin"]))
 
         # using available choice
         task, kwargs = parser.parse_arguments([sys.argv[0], "required-choice", "yes"])

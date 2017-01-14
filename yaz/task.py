@@ -10,8 +10,7 @@ class Task:
     class Documentation:
         def __init__(self, full):
             if full:
-                # long = self.yaz.render(doc, dict(plugin=plugin))
-                match = re.match("^(?P<first_line>.+)\n\n(?P<everything_else>.+)$", full)
+                match = re.match(r"^(?P<first_line>.+)\n\n(?P<everything_else>.+)$", full, re.MULTILINE)
                 if match:
                     short = match.group("first_line")
                     long = match.group("everything_else")
@@ -55,6 +54,10 @@ class Task:
 
         return result
 
+    def get_qualified_name(self):
+        """Returns the __qualname__ of this Task"""
+        return self.func.__qualname__
+
     def get_parameters(self):
         """Returns a list of parameters"""
         sig = inspect.signature(self.func)
@@ -76,11 +79,16 @@ class Task:
 _task_list = {}
 
 
-def get_task_tree():
-    tree = _task_list.copy()
+def get_task_tree(white_list=None):
+    assert white_list is None or isinstance(white_list, list), type(white_list)
+
+    tree = dict((task.get_qualified_name(), task)
+                for task
+                in _task_list.values()
+                if white_list is None or task.get_qualified_name() in white_list)
 
     plugins = BasePlugin.get_yaz_plugin_list()
-    for plugin in plugins.values():
+    for plugin in [plugin for plugin in plugins.values() if white_list is None or plugin.__qualname__ in white_list]:
         tasks = [func
                  for _, func
                  in inspect.getmembers(plugin)

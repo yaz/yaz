@@ -18,8 +18,20 @@ class ConfigurationPlugin(yaz.Plugin):
         return self.choices[choice]
 
     @yaz.task
-    def task_doc_string(self):
-        """This is the documentation for the doc_string task"""
+    def task_one_line_doc_string(self):
+        """This is the documentation for the one_line_doc_string task"""
+        # todo: needs a unit test
+        pass
+
+    @yaz.task
+    def task_multi_line_doc_string(self):
+        """
+        This is the documentation for the multi_line_doc_string task
+
+        This is the long description, for example:
+        bla bla,
+        etc...
+        """
         # todo: needs a unit test
         pass
 
