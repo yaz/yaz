@@ -19,8 +19,13 @@ def main(argv=None, white_list=None, load_yaz_extension=True):
     task, kwargs = parser.parse_arguments(sys.argv if argv is None else argv)
     if task:
         result = task(**kwargs)
+        if isinstance(result, int):
+            exit(result)
+
         if result is not None:
             print(result)
+
+        return result
 
     else:
         parser.print_help()
