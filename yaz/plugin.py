@@ -56,7 +56,6 @@ def get_plugin_instance(plugin_class, *args, **kwargs):
     if not plugin_class.__qualname__ in _yaz_plugin_instance_cache:
         plugin_class = get_plugin_class(plugin_class)
         _yaz_plugin_instance_cache[plugin_class.__qualname__] = plugin = plugin_class(*args, **kwargs)
-        print("create", plugin)
 
         funcs = [func
                  for _, func
