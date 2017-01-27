@@ -12,7 +12,8 @@ class FoodHelper(yaz.Plugin):
 
 
 class Food(yaz.Plugin):
-    def __init__(self, helper: FoodHelper):
+    @yaz.dependency
+    def set_helper(self, helper: FoodHelper):
         self.helper = helper
 
     @yaz.task
@@ -33,7 +34,8 @@ class Food(yaz.Plugin):
 
 
 class MoreFood(yaz.Plugin):
-    def __init__(self, helper: FoodHelper):
+    @yaz.dependency
+    def set_helper(self, helper: FoodHelper):
         self.helper = helper
 
     @yaz.task

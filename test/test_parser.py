@@ -4,6 +4,7 @@ import sys
 from yaz.parser import Parser
 from yaz.task import get_task_tree
 
+# The following imports are needed, as they declare the functions and classes needed by the tests
 import test.extension.singlefunction
 import test.extension.multiplefunctions
 import test.extension.singlemethod
@@ -14,7 +15,7 @@ import test.extension.taskconfiguration
 
 
 class TestParser(unittest.TestCase):
-    def test_single_function(self):
+    def test_010_single_function(self):
         """Should be available without specifying the task name"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["say"]))
@@ -27,7 +28,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "--message", "I said HELLO!"])
         self.assertEqual("I said HELLO!", task(**kwargs))
 
-    def test_multiple_functions(self):
+    def test_020_multiple_functions(self):
         """Should be available after specifying the task name"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["foo", "bar"]))
@@ -44,7 +45,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "bar"])
         self.assertEqual("Bar", task(**kwargs))
 
-    def test_single_method(self):
+    def test_030_single_method(self):
         """Should be available without specifying the plugin nor the task name"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["Person"]))
@@ -53,7 +54,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([])
         self.assertEqual("I have very little to say.", task(**kwargs))
 
-    def test_multiple_methods(self):
+    def test_040_multiple_methods(self):
         """Should be available without specifying the plugin name but after specifying the task name"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["Shape"]))
@@ -70,7 +71,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "square"])
         self.assertEqual("Square", task(**kwargs))
 
-    def test_multiple_plugins(self):
+    def test_050_multiple_plugins(self):
         """Should be available after specifying the plugin name and task name"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["Shape", "Person"]))
@@ -91,7 +92,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "shape", "square"])
         self.assertEqual("Square", task(**kwargs))
 
-    def test_naming_convention(self):
+    def test_060_naming_convention(self):
         """Should convert Plugin and task name to conform with naming conventions"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["ThisWasCamelCase", "Person"]))
@@ -105,7 +106,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-also-underscored"])
         self.assertEqual("this-was-also-underscored", task(**kwargs))
 
-    def test_boolean_type_annotation(self):
+    def test_070_boolean_type_annotation(self):
         """Should understand boolean type annotation"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
@@ -128,7 +129,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-boolean-false", "--check"])
         self.assertTrue(task(**kwargs))
 
-    def test_integer_type_annotation(self):
+    def test_080_integer_type_annotation(self):
         """Should understand integer type annotation"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
@@ -142,7 +143,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-integer", "--number", "123"])
         self.assertEqual(123, task(**kwargs))
 
-    def test_float_type_annotation(self):
+    def test_090_float_type_annotation(self):
         """Should understand float type annotation"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
@@ -157,7 +158,7 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float", "--number", "0.5"])
         self.assertEqual(0.5, task(**kwargs))
 
-    def test_choices_configuration(self):
+    def test_100_choices_configuration(self):
         """Should accept predefined choices"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["ConfigurationPlugin"]))

@@ -3,7 +3,7 @@ import inspect
 import asyncio
 
 from .decorator import decorator
-from .plugin import BasePlugin
+from .plugin import BasePlugin, get_plugin_instance, get_plugin_list
 
 
 class Task:
@@ -31,7 +31,6 @@ class Task:
         assert callable(func)
         assert isinstance(config, dict)
         self.plugin_class = plugin_class
-        self.plugin_instance = None
         self.func = func
         self.config = config
         self.documentation = self.Documentation(inspect.getdoc(self.func))
@@ -39,9 +38,7 @@ class Task:
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
         if self.plugin_class:
-            if not self.plugin_instance:
-                self.plugin_instance = self.plugin_class()
-            result = self.func(self.plugin_instance, **kwargs)
+            result = self.func(get_plugin_instance(self.plugin_class), **kwargs)
 
         else:
             result = self.func(**kwargs)
@@ -91,12 +88,12 @@ def get_task_tree(white_list=None):
                 in _task_list.values()
                 if white_list is None or task.get_qualified_name() in white_list)
 
-    plugins = BasePlugin.get_yaz_plugin_list()
+    plugins = get_plugin_list()
     for plugin in [plugin for plugin in plugins.values() if white_list is None or plugin.__qualname__ in white_list]:
         tasks = [func
                  for _, func
                  in inspect.getmembers(plugin)
-                 if inspect.isfunction(func) and hasattr(func, "yaz_config")]
+                 if inspect.isfunction(func) and hasattr(func, "yaz_task_config")]
         if len(tasks) == 0:
             continue
 
@@ -107,7 +104,7 @@ def get_task_tree(white_list=None):
             node = node[name]
 
         for func in tasks:
-            node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_config)
+            node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_task_config)
 
     return tree
 
@@ -155,6 +152,6 @@ def task(func, **config):
         assert not func.__qualname__ in _task_list, "Can not define the same task {} twice".format(func.__qualname__)
         _task_list[func.__qualname__] = Task(plugin_class=None, func=func, config=config)
     else:
-        func.yaz_config = config
+        func.yaz_task_config = config
 
     return func

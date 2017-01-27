@@ -2,22 +2,23 @@ import unittest
 import yaz
 
 from test.extension.dependencyinjection import Food, MoreFood
-import test.extension.pluginordinal
+from test.extension.pluginordinal import base as Orginal
 
 
 class TestPlugin(unittest.TestCase):
-    def test_depencency_injection(self):
-        """Should inject required plugins into constructor"""
-        food = Food()
+    def test_010_dependency_injection(self):
+        """Should call dependency setter"""
+        food = yaz.get_plugin_instance(Food)
         self.assertEqual("Breakfast is ready", food.breakfast())
         self.assertEqual("BREAKFAST IS READY", food.breakfast(shout=True))
 
-    def testPluginSingleton(self):
-        """Should inject the same dependency for different plugins"""
-        self.assertEqual(Food().get_helper(), MoreFood().get_helper())
+    def test_020_singleton_dependency_injection(self):
+        """Should inject the same dependency for different dependent plugins"""
+        food = yaz.get_plugin_instance(Food)
+        more_food = yaz.get_plugin_instance(MoreFood)
+        self.assertEqual(food.get_helper(), more_food.get_helper())
 
-    def testPluginCreationOrdinal(self):
+    def test_030_plugin_creation_ordinal(self):
         """Should follow the ordinal when creating the plugin type"""
-        plugins = yaz.BasePlugin.get_yaz_plugin_list()
-        Ordinal = plugins["Ordinal"]
-        self.assertEqual(["low (8)", "base (128)", "default (256)", "custom (512)", "high (1024)"], Ordinal().stack())
+        ordinal = yaz.get_plugin_instance(Orginal)
+        self.assertEqual(["low (8)", "base (128)", "default (256)", "custom (512)", "high (1024)"], ordinal.stack())
