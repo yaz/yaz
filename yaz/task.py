@@ -76,6 +76,9 @@ class Task:
         else:
             return default
 
+    def __str__(self):
+        return self.get_qualified_name()
+
 
 _task_list = {}
 

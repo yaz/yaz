@@ -112,7 +112,21 @@ class TestParser(unittest.TestCase):
         task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "optional-arguments"])
         self.assertEqual(("A", "B", "C", "D"), task(**kwargs))
 
-    def test_070_boolean_type_annotation(self):
+    def test_070_string_type_annotation(self):
+        """Should understand string type annotation"""
+        parser = Parser()
+        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "required-string", "Hello World"])
+        self.assertEqual("Hello World", task(**kwargs))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-string", "--string=Alternative"])
+        self.assertEqual("Alternative", task(**kwargs))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-string"])
+        self.assertEqual("Hello World!", task(**kwargs))
+
+    def test_075_boolean_type_annotation(self):
         """Should understand boolean type annotation"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["TypeAnnotation"]))

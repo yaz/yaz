@@ -32,6 +32,14 @@ class TypeAnnotation(yaz.Plugin):
     def optional_float(self, number: float = 3.14):
         return number
 
+    @yaz.task
+    def required_string(self, string: str):
+        return string
+
+    @yaz.task
+    def optional_string(self, string: str = "Hello World!"):
+        return string
+
 
 if __name__ == "__main__":
     yaz.main()

@@ -8,7 +8,7 @@ class Parser(argparse.ArgumentParser):
         super().__init__(*args, **kwargs)
 
     def _format_name(self, name: str, prefix: str = "", postfix: str = ""):
-        # todo: cleanup below code.  if does what it needs to do, but is not very pretty
+        # todo: cleanup below code.  it does what it needs to do, but is not very pretty
         name = re.sub(r"([^A-Z]+)([A-Z]+)", r"\1-\2", name)
         name = re.sub(r"_", r"-", name)
         name = re.sub(r"-[-]+", r"-", name)
@@ -39,38 +39,38 @@ class Parser(argparse.ArgumentParser):
                 kwargs["default"] = parameter.default
                 kwargs["dest"] = parameter.name
 
-            if parameter.annotation is not parameter.empty:
-                if parameter.annotation is bool:
-                    if parameter.default is parameter.empty:
-                        group = parser.add_mutually_exclusive_group(required=True)
-                        group.add_argument(
-                            self._format_name(parameter.name, "-" if len(parameter.name) == 1 else "--"),
-                            dest=parameter.name,
-                            action="store_true",
-                            help="{}, pass this flag to set to True".format(kwargs["help"])
-                        )
-                        group.add_argument(
-                            self._format_name(parameter.name, "--no-"),
-                            dest=parameter.name,
-                            action="store_false",
-                            help="{}, pass this flag to set to False".format(kwargs["help"])
-                        )
-                        continue
+            type_ = task.get_configuration("{}__type".format(parameter.name), str if parameter.annotation is parameter.empty else parameter.annotation)
+            if type_ is bool:
+                if parameter.default is parameter.empty:
+                    group = parser.add_mutually_exclusive_group(required=True)
+                    group.add_argument(
+                        self._format_name(parameter.name, "-" if len(parameter.name) == 1 else "--"),
+                        dest=parameter.name,
+                        action="store_true",
+                        help="{}, pass this flag to set to True".format(kwargs["help"])
+                    )
+                    group.add_argument(
+                        self._format_name(parameter.name, "--no-"),
+                        dest=parameter.name,
+                        action="store_false",
+                        help="{}, pass this flag to set to False".format(kwargs["help"])
+                    )
+                    continue
 
+                else:
+                    if parameter.default:
+                        args = (self._format_name(parameter.name, "--no-"),)
+                        kwargs["action"] = "store_false"
+                        kwargs["help"] = "{}, pass this flag to set to False".format(kwargs["help"])
                     else:
-                        if parameter.default:
-                            args = (self._format_name(parameter.name, "--no-"),)
-                            kwargs["action"] = "store_false"
-                            kwargs["help"] = "{}, pass this flag to set to False".format(kwargs["help"])
-                        else:
-                            kwargs["action"] = "store_true"
-                            kwargs["help"] = "{}, pass this flag to set to True".format(kwargs["help"])
+                        kwargs["action"] = "store_true"
+                        kwargs["help"] = "{}, pass this flag to set to True".format(kwargs["help"])
 
-                elif parameter.annotation is int:
-                    kwargs["type"] = int
+            elif callable(type_):
+                kwargs["type"] = type_
 
-                elif parameter.annotation is float:
-                    kwargs["type"] = float
+            else:
+                raise RuntimeError("Task \"{}\" defines parameter \"{}\" with an unknown type \"{}\"".format(task, parameter, type_))
 
             parameter_map.update({arg: parameter.name for arg in args})
             parser.add_argument(
