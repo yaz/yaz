@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name="yaz",
       packages=["yaz"],
-      version="1.0.0b5",
+      version="1.0.0b6",
       description="A scripting tool",
       author="Boudewijn Schoon",
       author_email="yaz@frayja.com",

@@ -3,7 +3,16 @@
 import yaz
 
 
+class This_was__a_weirdMIXTure__(yaz.Plugin):
+    @yaz.task
+    def expected_class_name(self):
+        return "this-was-a-weird-mixture"
+
 class ThisWasCamelCase(yaz.Plugin):
+    @yaz.task
+    def expected_class_name(self):
+        return "this-was-camel-case"
+
     @yaz.task
     def this_was_underscored(self):
         return "this-was-underscored"

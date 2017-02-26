@@ -86,6 +86,9 @@ _task_list = {}
 def get_task_tree(white_list=None):
     assert white_list is None or isinstance(white_list, list), type(white_list)
 
+    if white_list is not None:
+        white_list = set(item if isinstance(item, str) else item.__qualname__ for item in white_list)
+
     tree = dict((task.get_qualified_name(), task)
                 for task
                 in _task_list.values()

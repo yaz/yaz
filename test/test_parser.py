@@ -1,206 +1,138 @@
 import os.path
-import sys
-import unittest
+import yaz
 
-from yaz.parser import Parser
-from yaz.task import get_task_tree
-
-# The following imports are needed, as they declare the functions and classes needed by the tests
-import test.extension.singlefunction
-import test.extension.multiplefunctions
-import test.extension.singlemethod
-import test.extension.multiplemethods
-import test.extension.namingconvention
-import test.extension.typeannotation
-import test.extension.taskconfiguration
+import test.extension.singlefunction as single_function
+import test.extension.multiplefunctions as multiple_functions
+import test.extension.singlemethod as single_method
+import test.extension.multiplemethods as multiple_methods
+import test.extension.namingconvention as naming_convention
+import test.extension.typeannotation as type_annotation
+import test.extension.taskconfiguration as task_configuration
 
 
-class TestParser(unittest.TestCase):
+class TestParser(yaz.TestCase):
     def test_010_single_function(self):
         """Should be available without specifying the task name"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["say"]))
+        caller = self.get_caller([single_function.say])
 
         # without arguments, uses default value for message
-        task, kwargs = parser.parse_arguments([])
-        self.assertEqual("Hello World!", task(**kwargs))
+        self.assertEqual("Hello World!", caller())
 
         # provide message value as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "--message", "I said HELLO!"])
-        self.assertEqual("I said HELLO!", task(**kwargs))
+        self.assertEqual("I said HELLO!", caller("--message", "I said HELLO!"))
 
     def test_020_multiple_functions(self):
         """Should be available after specifying the task name"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["foo", "bar"]))
+        caller = self.get_caller([multiple_functions.foo, multiple_functions.bar])
 
         # without arguments, can not determine the task to run
-        task, kwargs = parser.parse_arguments([])
-        self.assertIsNone(task)
+        with self.assertRaisesRegex(AssertionError, "The parser did not find a task"):
+            caller()
 
         # provide the task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "foo"])
-        self.assertEqual("Foo", task(**kwargs))
+        self.assertEqual("Foo", caller("foo"))
 
         # provide the task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "bar"])
-        self.assertEqual("Bar", task(**kwargs))
+        self.assertEqual("Bar", caller("bar"))
 
     def test_030_single_method(self):
         """Should be available without specifying the plugin nor the task name"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["Person"]))
-
-        # without arguments, can not determine the task to run
-        task, kwargs = parser.parse_arguments([])
-        self.assertEqual("I have very little to say.", task(**kwargs))
+        caller = self.get_caller([single_method.Person])
+        self.assertEqual("I have very little to say.", caller())
 
     def test_040_multiple_methods(self):
         """Should be available without specifying the plugin name but after specifying the task name"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["Shape"]))
+        caller = self.get_caller([multiple_methods.Shape])
 
         # without arguments, can not determine the task to run
-        task, kwargs = parser.parse_arguments([])
-        self.assertIsNone(task)
+        with self.assertRaisesRegex(AssertionError, "The parser did not find a task"):
+            caller()
 
         # provide the task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "circle"])
-        self.assertEqual("Circle", task(**kwargs))
+        self.assertEqual("Circle", caller("circle"))
 
         # provide the task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "square"])
-        self.assertEqual("Square", task(**kwargs))
+        self.assertEqual("Square", caller("square"))
 
     def test_050_multiple_plugins(self):
         """Should be available after specifying the plugin name and task name"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["Shape", "Person"]))
+        caller = self.get_caller([multiple_methods.Shape, single_method.Person])
 
         # without arguments, can not determine the task to run
-        task, kwargs = parser.parse_arguments([])
-        self.assertIsNone(task)
+        with self.assertRaisesRegex(AssertionError, "The parser did not find a task"):
+            caller()
 
         # provide the plugin as an argument (task name is not needed, as Person only has one task)
-        task, kwargs = parser.parse_arguments([sys.argv[0], "person"])
-        self.assertEqual("I have very little to say.", task(**kwargs))
+        self.assertEqual("I have very little to say.", caller("person"))
 
         # provide the plugin and task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "shape", "circle"])
-        self.assertEqual("Circle", task(**kwargs))
+        self.assertEqual("Circle", caller("shape", "circle"))
 
         # provide the plugin and task as an argument
-        task, kwargs = parser.parse_arguments([sys.argv[0], "shape", "square"])
-        self.assertEqual("Square", task(**kwargs))
+        self.assertEqual("Square", caller("shape", "square"))
 
     def test_060_naming_convention(self):
         """Should convert Plugin name, task name, and argument name to conform with naming conventions"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["ThisWasCamelCase", "Person"]))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-underscored"])
-        self.assertEqual("this-was-underscored", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-camel-case"])
-        self.assertEqual("this-was-camel-case", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-also-underscored"])
-        self.assertEqual("this-was-also-underscored", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "required-arguments", "a", "b", "c", "d"])
-        self.assertEqual(("a", "b", "c", "d"), task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "optional-arguments"])
-        self.assertEqual(("A", "B", "C", "D"), task(**kwargs))
+        caller = self.get_caller([naming_convention.This_was__a_weirdMIXTure__, naming_convention.ThisWasCamelCase])
+        self.assertEqual("this-was-a-weird-mixture", caller("this-was-a-weird-mixture"))
+        self.assertEqual("this-was-camel-case", caller("this-was-camel-case", "expected-class-name"))
+        self.assertEqual("this-was-underscored", caller("this-was-camel-case", "this-was-underscored"))
+        self.assertEqual("this-was-camel-case", caller("this-was-camel-case", "this-was-camel-case"))
+        self.assertEqual("this-was-also-underscored", caller("this-was-camel-case", "this-was-also-underscored"))
+        self.assertEqual(("a", "b", "c", "d"), caller("this-was-camel-case", "required-arguments", "a", "b", "c", "d"))
+        self.assertEqual(("A", "B", "C", "D"), caller("this-was-camel-case", "optional-arguments"))
 
     def test_070_string_type_annotation(self):
         """Should understand string type annotation"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+        caller = self.get_caller([type_annotation.TypeAnnotation])
+        self.assertEqual("Hello World", caller("required-string", "Hello World"))
+        self.assertEqual("Alternative", caller("optional-string", "--string=Alternative"))
+        self.assertEqual("Hello World!", caller("optional-string"))
 
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-string", "Hello World"])
-        self.assertEqual("Hello World", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-string", "--string=Alternative"])
-        self.assertEqual("Alternative", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-string"])
-        self.assertEqual("Hello World!", task(**kwargs))
-
-    def test_075_boolean_type_annotation(self):
+    def test_080_boolean_type_annotation(self):
         """Should understand boolean type annotation"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+        caller = self.get_caller([type_annotation.TypeAnnotation])
+        self.assertTrue(caller("required-boolean", "--check"))
+        self.assertFalse(caller("required-boolean", "--no-check"))
+        self.assertTrue(caller("optional-boolean-true"))
+        self.assertFalse(caller("optional-boolean-true", "--no-check"))
+        self.assertFalse(caller("optional-boolean-false"))
+        self.assertTrue(caller("optional-boolean-false", "--check"))
 
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-boolean", "--check"])
-        self.assertTrue(task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-boolean", "--no-check"])
-        self.assertFalse(task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-boolean-true"])
-        self.assertTrue(task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-boolean-true", "--no-check"])
-        self.assertFalse(task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-boolean-false"])
-        self.assertFalse(task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-boolean-false", "--check"])
-        self.assertTrue(task(**kwargs))
-
-    def test_080_integer_type_annotation(self):
+    def test_090_integer_type_annotation(self):
         """Should understand integer type annotation"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+        caller = self.get_caller([type_annotation.TypeAnnotation])
+        self.assertEqual(123, caller("required-integer", "123"))
+        self.assertEqual(42, caller("optional-integer"))
+        self.assertEqual(123, caller("optional-integer", "--number", "123"))
 
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-integer", "123"])
-        self.assertEqual(123, task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-integer"])
-        self.assertEqual(42, task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-integer", "--number", "123"])
-        self.assertEqual(123, task(**kwargs))
-
-    def test_090_float_type_annotation(self):
+    def test_100_float_type_annotation(self):
         """Should understand float type annotation"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+        caller = self.get_caller([type_annotation.TypeAnnotation])
+        self.assertEqual(0.5, caller("required-float", "0.5"))
+        self.assertEqual(3.14, caller("optional-float"))
+        self.assertEqual(0.5, caller("optional-float", "--number", "0.5"))
 
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-float", "0.5"])
-        self.assertEqual(0.5, task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float"])
-        self.assertEqual(3.14, task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float", "--number", "0.5"])
-        self.assertEqual(0.5, task(**kwargs))
-
-    def test_095_file_type_annotation(self):
+    def test_110_file_type_annotation(self):
         """Should understand file, i.e. open, type annotation"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+        caller = self.get_caller([type_annotation.TypeAnnotation])
 
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")])
-        self.assertEqual("First line\nSecond line\nThird line", task(**kwargs))
-
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-file", "--file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")])
-        self.assertEqual("First line\nSecond line\nThird line", task(**kwargs))
+        expected = "First line\nSecond line\nThird line"
+        self.assertEqual(expected, caller("required-file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")))
+        self.assertEqual(expected, caller("optional-file", "--file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")))
 
         expected = "#!/usr/bin/env python3"
-        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-file", "--length", str(len(expected))])
-        self.assertEqual(expected, task(**kwargs))
+        self.assertEqual(
+            expected,
+            caller("optional-file", "--length", str(len(expected))))
 
-    def test_100_choices_configuration(self):
+    def test_120_choices_configuration(self):
         """Should accept predefined choices"""
-        parser = Parser()
-        parser.add_task_tree(get_task_tree(["ConfigurationPlugin"]))
+        caller = self.get_caller([task_configuration.ConfigurationPlugin])
 
         # using available choice
-        task, kwargs = parser.parse_arguments([sys.argv[0], "required-choice", "yes"])
-        self.assertTrue(task(**kwargs))
+        self.assertTrue(caller("required-choice", "yes"))
 
         # using unavailable choice
-        self.assertRaises(SystemExit, parser.parse_arguments, [sys.argv[0], "required-choice", "unavailable"])
+        with self.assertRaises(SystemExit):
+            caller("required-choice", "unavailable")
