@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='yaz',
-      version='1.0.0b2',
+      version='1.0.0b3',
       description='A scripting tool',
       author='Boudewijn Schoon',
       author_email='yaz@frayja.com',

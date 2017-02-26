@@ -23,7 +23,7 @@ class Parser(argparse.ArgumentParser):
             assert isinstance(parser, Parser)
             assert isinstance(task, Task)
 
-        parser.set_defaults(yaz_task=task)
+        parameter_map = {}
 
         for parameter in task.get_parameters():
             args = (self._format_name(parameter.name),)
@@ -72,9 +72,13 @@ class Parser(argparse.ArgumentParser):
                 elif parameter.annotation is float:
                     kwargs["type"] = float
 
+            parameter_map.update({arg: parameter.name for arg in args})
             parser.add_argument(
                 *args,
                 **dict((key, value) for key, value in kwargs.items() if not value is None))
+
+        parser.set_defaults(yaz_task=task)
+        parser.set_defaults(yaz_parameter_map=parameter_map)
 
     def _add_task_tree_node(self, parser, task):
         while isinstance(task, dict) and len(task) == 1:
@@ -99,4 +103,12 @@ class Parser(argparse.ArgumentParser):
         assert isinstance(argv, list)
         assert all(isinstance(arg, str) for arg in argv)
         kwargs = vars(self.parse_args(argv[1:]))
-        return kwargs.pop("yaz_task", None), kwargs
+        task = kwargs.pop("yaz_task", None)
+
+        # use the parameter_map to get the original parameter names instead
+        # of the names used by the argument parser
+        parameter_map = kwargs.pop("yaz_parameter_map", None)
+        if parameter_map:
+            kwargs = {parameter_map.get(key, key): value for key, value in kwargs.items()}
+
+        return task, kwargs

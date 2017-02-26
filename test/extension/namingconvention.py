@@ -16,6 +16,14 @@ class ThisWasCamelCase(yaz.Plugin):
     def _this___was_also__underscored___(self):
         return "this-was-also-underscored"
 
+    @yaz.task
+    def required_arguments(self, this_was_underscored, thisWasCamelCase, _this___was_also__underscored___, D):
+        return this_was_underscored, thisWasCamelCase, _this___was_also__underscored___, D
+
+    @yaz.task
+    def optional_arguments(self, this_was_underscored='A', thisWasCamelCase='B', _this___was_also__underscored___='C', D='D'):
+        return this_was_underscored, thisWasCamelCase, _this___was_also__underscored___, D
+
 
 if __name__ == "__main__":
     yaz.main()

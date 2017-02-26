@@ -93,7 +93,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual("Square", task(**kwargs))
 
     def test_060_naming_convention(self):
-        """Should convert Plugin and task name to conform with naming conventions"""
+        """Should convert Plugin name, task name, and argument name to conform with naming conventions"""
         parser = Parser()
         parser.add_task_tree(get_task_tree(["ThisWasCamelCase", "Person"]))
 
@@ -105,6 +105,12 @@ class TestParser(unittest.TestCase):
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "this-was-also-underscored"])
         self.assertEqual("this-was-also-underscored", task(**kwargs))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "required-arguments", "a", "b", "c", "d"])
+        self.assertEqual(("a", "b", "c", "d"), task(**kwargs))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "this-was-camel-case", "optional-arguments"])
+        self.assertEqual(("A", "B", "C", "D"), task(**kwargs))
 
     def test_070_boolean_type_annotation(self):
         """Should understand boolean type annotation"""
