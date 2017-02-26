@@ -21,4 +21,4 @@ class TestPlugin(unittest.TestCase):
     def test_030_plugin_creation_ordinal(self):
         """Should follow the ordinal when creating the plugin type"""
         ordinal = yaz.get_plugin_instance(Orginal)
-        self.assertEqual(["low (8)", "base (128)", "default (256)", "custom (512)", "high (1024)"], ordinal.stack())
+        self.assertEqual(["low (8)", "custom (128)", "default (256)", "base (512)", "high (1024)"], ordinal.stack())

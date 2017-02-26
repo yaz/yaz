@@ -86,7 +86,7 @@ class BasePlugin:
     @staticmethod
     def yaz_get_ordinal():
         # typically used from a yaz_foo_plugin
-        return 128
+        return 512
 
 
 class Plugin(BasePlugin):
@@ -100,4 +100,4 @@ class CustomPlugin(Plugin):
     @staticmethod
     def yaz_get_ordinal():
         # typically used from a custom user configuration
-        return 512
+        return 128
