@@ -1,5 +1,6 @@
-import unittest
+import os.path
 import sys
+import unittest
 
 from yaz.parser import Parser
 from yaz.task import get_task_tree
@@ -170,13 +171,27 @@ class TestParser(unittest.TestCase):
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "required-float", "0.5"])
         self.assertEqual(0.5, task(**kwargs))
-        assert task(**kwargs) == 0.5
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float"])
         self.assertEqual(3.14, task(**kwargs))
 
         task, kwargs = parser.parse_arguments([sys.argv[0], "optional-float", "--number", "0.5"])
         self.assertEqual(0.5, task(**kwargs))
+
+    def test_095_file_type_annotation(self):
+        """Should understand file, i.e. open, type annotation"""
+        parser = Parser()
+        parser.add_task_tree(get_task_tree(["TypeAnnotation"]))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "required-file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")])
+        self.assertEqual("First line\nSecond line\nThird line", task(**kwargs))
+
+        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-file", "--file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")])
+        self.assertEqual("First line\nSecond line\nThird line", task(**kwargs))
+
+        expected = "#!/usr/bin/env python3"
+        task, kwargs = parser.parse_arguments([sys.argv[0], "optional-file", "--length", str(len(expected))])
+        self.assertEqual(expected, task(**kwargs))
 
     def test_100_choices_configuration(self):
         """Should accept predefined choices"""

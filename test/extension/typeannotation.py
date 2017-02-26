@@ -40,6 +40,14 @@ class TypeAnnotation(yaz.Plugin):
     def optional_string(self, string: str = "Hello World!"):
         return string
 
+    @yaz.task
+    def required_file(self, file: open, length: int = 1024):
+        return file.read(length)
+
+    @yaz.task
+    def optional_file(self, file: open = __file__, length: int = 1024):
+        return file.read(length)
+
 
 if __name__ == "__main__":
     yaz.main()
