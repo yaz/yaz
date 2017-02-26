@@ -1,7 +1,10 @@
 init:
-	pip3 install -r requirements.txt
+	pip install -r requirements.txt
 
 test:
 	nosetests --with-coverage --cover-html --cover-package yaz
 
-.PHONY: init test
+upload: test
+	python setup.py sdist upload -r pypi
+
+.PHONY: init test upload
