@@ -1,7 +1,7 @@
 import asyncio
 import yaz
 
-import test.extension.coroutine as co_routine
+import yaz.test.extension.coroutine as co_routine
 
 
 class TestTask(yaz.TestCase):

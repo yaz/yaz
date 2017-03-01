@@ -42,11 +42,17 @@ class TypeAnnotation(yaz.Plugin):
 
     @yaz.task
     def required_file(self, file: open, length: int = 1024):
-        return file.read(length)
+        try:
+            return file.read(length)
+        finally:
+            file.close()
 
     @yaz.task
     def optional_file(self, file: open = __file__, length: int = 1024):
-        return file.read(length)
+        try:
+            return file.read(length)
+        finally:
+            file.close()
 
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
 import os.path
 import yaz
 
-import test.extension.singlefunction as single_function
-import test.extension.multiplefunctions as multiple_functions
-import test.extension.singlemethod as single_method
-import test.extension.multiplemethods as multiple_methods
-import test.extension.namingconvention as naming_convention
-import test.extension.typeannotation as type_annotation
-import test.extension.taskconfiguration as task_configuration
+import yaz.test.extension.singlefunction as single_function
+import yaz.test.extension.multiplefunctions as multiple_functions
+import yaz.test.extension.singlemethod as single_method
+import yaz.test.extension.multiplemethods as multiple_methods
+import yaz.test.extension.namingconvention as naming_convention
+import yaz.test.extension.typeannotation as type_annotation
+import yaz.test.extension.taskconfiguration as task_configuration
 
 
 class TestParser(yaz.TestCase):

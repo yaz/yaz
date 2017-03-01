@@ -1,8 +1,8 @@
 import unittest
 import yaz
 
-from test.extension.dependencyinjection import Food, MoreFood
-from test.extension.pluginordinal import base as Orginal
+from yaz.test.extension.dependencyinjection import Food, MoreFood
+from yaz.test.extension.pluginordinal import base as Orginal
 
 
 class TestPlugin(unittest.TestCase):

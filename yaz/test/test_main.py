@@ -4,6 +4,10 @@ import unittest
 from yaz import main
 
 
+def say(message: str = "Hello World"):
+    return message
+
+
 class TestMain(unittest.TestCase):
     def test_main(self):
         """Should load a module from a given directory"""
