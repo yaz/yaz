@@ -33,7 +33,14 @@ class Task:
         self.plugin_class = plugin_class
         self.func = func
         self.config = config
-        self.documentation = self.Documentation(inspect.getdoc(self.func))
+
+    @property
+    def plugin_documentation(self):
+        return self.Documentation(inspect.getdoc(self.plugin_class))
+
+    @property
+    def documentation(self):
+        return self.Documentation(inspect.getdoc(self.func))
 
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
@@ -137,23 +144,23 @@ def task(func, **config):
     # @functools.wraps(func)
     # def wrapper(*args, **kwargs):
     #     return func(*args, **kwargs)
-        # verbose = self.yaz.verbose
-        # if verbose:
-        #     start = datetime.datetime.now()
-        #     print(self.render("{% color '', '', 'reverse' %}>>> {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ sourcefile }}",
-        #                       dict(plugin=self, task=func, sourcefile=inspect.getsourcefile(func))))
-        # try:
-        #     return func(self, *args, **kwargs)
-        # except Exception as exception:
-        #     if verbose:
-        #         print(self.render("{% color '', '', 'reverse' %}!!! {{ plugin.__class__.__name__ }} {{ exception }}{% endcolor %}",
-        #                           dict(plugin=self, task=func, sourcefile=repr(exception))))
-        #     raise
-        # finally:
-        #     if verbose:
-        #         stop = datetime.datetime.now()
-        #         print(self.render("{% color '', '', 'reverse' %}<<< {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ duration }}",
-        #                           dict(plugin=self, task=func, duration=stop - start)))
+    # verbose = self.yaz.verbose
+    # if verbose:
+    #     start = datetime.datetime.now()
+    #     print(self.render("{% color '', '', 'reverse' %}>>> {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ sourcefile }}",
+    #                       dict(plugin=self, task=func, sourcefile=inspect.getsourcefile(func))))
+    # try:
+    #     return func(self, *args, **kwargs)
+    # except Exception as exception:
+    #     if verbose:
+    #         print(self.render("{% color '', '', 'reverse' %}!!! {{ plugin.__class__.__name__ }} {{ exception }}{% endcolor %}",
+    #                           dict(plugin=self, task=func, sourcefile=repr(exception))))
+    #     raise
+    # finally:
+    #     if verbose:
+    #         stop = datetime.datetime.now()
+    #         print(self.render("{% color '', '', 'reverse' %}<<< {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ duration }}",
+    #                           dict(plugin=self, task=func, duration=stop - start)))
     if func.__name__ == func.__qualname__:
         assert not func.__qualname__ in _task_list, "Can not define the same task {} twice".format(func.__qualname__)
         _task_list[func.__qualname__] = Task(plugin_class=None, func=func, config=config)

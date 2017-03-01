@@ -77,19 +77,29 @@ class Parser(argparse.ArgumentParser):
                 *args,
                 **dict((key, value) for key, value in kwargs.items() if not value is None))
 
+        parser.description = task.documentation.full
         parser.set_defaults(yaz_task=task)
         parser.set_defaults(yaz_parameter_map=parameter_map)
+
+    def _get_plugin_documentation(self, tasks):
+        first_task = tasks[0][1]
+        if not isinstance(first_task, dict):
+            docs = [first_task.plugin_documentation.full, ""]
+
+            max_name_length = max(len(name) for name, _ in tasks)
+            docs.extend("{:{length}}  {}".format(name, task.documentation.short, length=max_name_length) for name, task in tasks)
+            return "\n".join(docs)
 
     def _add_task_tree_node(self, parser, task):
         while isinstance(task, dict) and len(task) == 1:
             task = next(iter(task.values()))
 
         if isinstance(task, dict):
-            subparsers = parser.add_subparsers()
-            for name, task in sorted(task.items()):
-                description = None if isinstance(task, dict) else task.documentation.full
+            tasks = sorted(task.items())
+            subparsers = parser.add_subparsers(description=self._get_plugin_documentation(tasks))
+            for name, task in tasks:
                 self._add_task_tree_node(
-                    subparsers.add_parser(self._format_name(name), description=description),
+                    subparsers.add_parser(self._format_name(name)),
                     task)
 
         else:
