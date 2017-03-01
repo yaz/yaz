@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(name="yaz",
       packages=["yaz"],
-      version="1.0.0b7",
+      version="1.0.0",
       description="A scripting tool",
       author="Boudewijn Schoon",
       author_email="yaz@frayja.com",
@@ -12,7 +12,7 @@ setup(name="yaz",
       test_suite="nose.collector",
       tests_require=["nose"],
       classifiers=[
-          "Development Status :: 4 - Beta",
+          "Development Status :: 5 - Production/Stable",
           "Environment :: Console",
           "License :: OSI Approved :: MIT License",
           "Programming Language :: Python :: 3.5",
