@@ -1,5 +1,6 @@
 import sys
 
+from .error import Error
 from .loader import load
 from .parser import Parser
 from .task import get_task_tree
@@ -10,22 +11,36 @@ def main(argv=None, white_list=None, load_yaz_extension=True):
     assert white_list is None or isinstance(white_list, list), type(white_list)
     assert isinstance(load_yaz_extension, bool), type(load_yaz_extension)
 
+    argv = sys.argv if argv is None else argv
+    assert len(argv) > 0, len(argv)
+
     if load_yaz_extension:
         load("~/.yaz", "yaz_extension")
 
-    parser = Parser()
+    parser = Parser(prog=argv[0])
     parser.add_task_tree(get_task_tree(white_list))
 
-    task, kwargs = parser.parse_arguments(sys.argv if argv is None else argv)
+    task, kwargs = parser.parse_arguments(argv)
+
     if task:
-        result = task(**kwargs)
-        if result is not None:
-            print(result)
+        try:
+            output = task(**kwargs)
+            if isinstance(output, bool):
+                code = 0 if output else 1
+            elif isinstance(output, int):
+                code = output % 256
+            else:
+                code = 0
 
-        if isinstance(result, int) and not isinstance(result, bool):
-            exit(result)
-
-        return result
+        except Error as error:
+            code = error.return_code
+            output = error
 
     else:
-        parser.print_help()
+        code = 0
+        output = parser.format_help().rstrip()
+
+    if output is not None:
+        print(output)
+
+    exit(code)

@@ -82,13 +82,17 @@ class Parser(argparse.ArgumentParser):
         parser.set_defaults(yaz_parameter_map=parameter_map)
 
     def _get_plugin_documentation(self, tasks):
-        first_task = tasks[0][1]
-        if not isinstance(first_task, dict):
-            docs = [first_task.plugin_documentation.full, ""]
+        if not tasks:
+            return
 
-            max_name_length = max(len(name) for name, _ in tasks)
-            docs.extend("{:{length}}  {}".format(name, task.documentation.short, length=max_name_length) for name, task in tasks)
-            return "\n".join(docs)
+        first_task = tasks[0][1]
+        if isinstance(first_task, dict):
+            return
+
+        docs = [first_task.plugin_documentation.full, ""]
+        max_name_length = max(len(name) for name, _ in tasks)
+        docs.extend("{:{length}}  {}".format(name, task.documentation.short, length=max_name_length) for name, task in tasks)
+        return "\n".join(docs)
 
     def _add_task_tree_node(self, parser, task):
         while isinstance(task, dict) and len(task) == 1:
