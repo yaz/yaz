@@ -1,8 +1,10 @@
-import re
-import inspect
 import asyncio
+import datetime
+import inspect
+import re
 
 from .decorator import decorator
+from .log import logger
 from .plugin import BasePlugin, get_plugin_instance, get_plugin_list
 
 
@@ -44,21 +46,27 @@ class Task:
 
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
-        if self.plugin_class:
-            result = self.func(get_plugin_instance(self.plugin_class), **kwargs)
+        start = datetime.datetime.now()
+        logger.info("Start task %s", self)
+        try:
+            if self.plugin_class:
+                result = self.func(get_plugin_instance(self.plugin_class), **kwargs)
 
-        else:
-            result = self.func(**kwargs)
+            else:
+                result = self.func(**kwargs)
 
-        if inspect.iscoroutinefunction(self.func):
-            assert inspect.iscoroutine(
-                result), "The task is defined as a coroutine function but does not return a coroutine"
-            loop = asyncio.get_event_loop()
-            if loop.is_closed():
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-            result = loop.run_until_complete(result)
-            loop.close()
+            if inspect.iscoroutinefunction(self.func):
+                assert inspect.iscoroutine(
+                    result), "The task is defined as a coroutine function but does not return a coroutine"
+                loop = asyncio.get_event_loop()
+                if loop.is_closed():
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                result = loop.run_until_complete(result)
+                loop.close()
+        finally:
+            stop = datetime.datetime.now()
+            logger.info("End task %s after %s", self, stop - start)
 
         return result
 

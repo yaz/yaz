@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fixed: arguments with underscores are now printed correctly in the generated
   ``--help`` output [#7](https://github.com/boudewijn-zicht/yaz/issues/7)
-
+- Added: log messages when a task starts and ends, using info level
 
 1.0.2
 -----
