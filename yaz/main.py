@@ -55,4 +55,4 @@ def main(argv=None, white_list=None, load_yaz_extension=True):
     if output is not None:
         print(output)
 
-    exit(code)
+    sys.exit(code)
