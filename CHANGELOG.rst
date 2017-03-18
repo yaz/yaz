@@ -4,19 +4,21 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+The format is based on `Keep a Changelog <http://keepachangelog.com/>`_
+and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 [Unreleased]
 ------------
 
 - Added: log messages when a task starts and ends, using info level
 - Added: ``yaz.version`` containing the current version string
+  `[#3] <https://github.com/boudewijn-zicht/yaz/issues/3>`_
 - Changed: when no task is found to execute, exit with 1 (failure) instead of 0 (success)
 - Fixed: arguments with underscores are now printed correctly in the generated
-  ``--help`` output [#7](https://github.com/boudewijn-zicht/yaz/issues/7)
+  ``--help`` output
+  `[#7] <https://github.com/boudewijn-zicht/yaz/issues/7>`_
 - Fixed: boolean and integer task return types should not be printed
-  [#8](https://github.com/boudewijn-zicht/yaz/issues/8)
+  `[#8] <https://github.com/boudewijn-zicht/yaz/issues/8>`_
 
 1.0.2
 -----
