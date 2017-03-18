@@ -10,6 +10,9 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
+1.0.3
+-----
+
 - Added: log messages when a task starts and ends, using info level
 - Added: ``yaz.version`` containing the current version string
   `[#3] <https://github.com/boudewijn-zicht/yaz/issues/3>`_
