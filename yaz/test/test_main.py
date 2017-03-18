@@ -38,7 +38,7 @@ subcommands:
                 main(["SCRIPT"], [])
 
             # check exit code
-            self.assertEqual(0, context.exception.code)
+            self.assertEqual(1, context.exception.code)
 
             # check stdout
             stdout.seek(0)
