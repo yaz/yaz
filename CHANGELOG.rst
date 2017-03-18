@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ------------
 
 - Added: log messages when a task starts and ends, using info level
+- Added: ``yaz.version`` containing the current version string
 - Changed: when no task is found to execute, exit with 1 (failure) instead of 0 (success)
 - Fixed: arguments with underscores are now printed correctly in the generated
   ``--help`` output [#7](https://github.com/boudewijn-zicht/yaz/issues/7)

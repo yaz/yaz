@@ -2,7 +2,10 @@ import os
 import setuptools
 import sys
 
-version = "1.0.2"
+with open("yaz/version.py") as file:
+    globals = {}
+    exec(file.read(), globals)
+    version = globals["__version__"]
 
 if sys.argv[-1] == "tag":
     os.system("git tag -a {} -m \"Release {}\"".format(version, version))
