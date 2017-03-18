@@ -91,7 +91,7 @@ class Parser(argparse.ArgumentParser):
 
         docs = [first_task.plugin_documentation.full, ""]
         max_name_length = max(len(name) for name, _ in tasks)
-        docs.extend("{:{length}}  {}".format(name, task.documentation.short, length=max_name_length) for name, task in tasks)
+        docs.extend("{:{length}}  {}".format(self._format_name(name), task.documentation.short, length=max_name_length) for name, task in tasks)
         return "\n".join(docs)
 
     def _add_task_tree_node(self, parser, task):

@@ -1,11 +1,8 @@
 import unittest
 import unittest.mock
-
 import io
 
-from yaz import Error
 from yaz import main
-
 from yaz.test.extension.singlefunction import say
 from yaz.test.extension.errorfunction import yaz_error, return_boolean, return_integer
 
