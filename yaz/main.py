@@ -24,14 +24,25 @@ def main(argv=None, white_list=None, load_yaz_extension=True):
 
     if task:
         try:
-            output = task(**kwargs)
-            if isinstance(output, bool):
-                code = 0 if output else 1
-            elif isinstance(output, int):
-                code = output % 256
+            result = task(**kwargs)
+
+            # when the result is a boolean, we exit with 0 (success) or 1 (failure)
+            if isinstance(result, bool):
+                code = 0 if result else 1
+                output = None
+
+            # when the result is an integer, we exit with that integer value
+            elif isinstance(result, int):
+                code = result % 256
+                output = None
+
+            # otherwise we exit with 0 (success) and print the result
             else:
                 code = 0
+                output = result
 
+        # when yaz.Error occurs, we exit with the given return code and print the error message
+        # when any other error occurs, we let python handle the exception (i.e. exit(1) and print call stack)
         except Error as error:
             code = error.return_code
             output = error

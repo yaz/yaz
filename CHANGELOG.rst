@@ -10,15 +10,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [Unreleased]
 ------------
 
+- Added: log messages when a task starts and ends, using info level
 - Fixed: arguments with underscores are now printed correctly in the generated
   ``--help`` output [#7](https://github.com/boudewijn-zicht/yaz/issues/7)
-- Added: log messages when a task starts and ends, using info level
+- Fixed: boolean and integer task return types should not be printed
+  [#8](https://github.com/boudewijn-zicht/yaz/issues/8)
 
 1.0.2
 -----
 
-- Changed: improvements to ``README.rst``
 - Added: ``CHANGELOG.rst``
+- Changed: improvements to ``README.rst``
 
 1.0.1
 -----

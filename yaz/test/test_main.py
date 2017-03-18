@@ -81,16 +81,37 @@ optional arguments:
     def test_050_task_returns_integer(self):
         """Should exit with task integer return value"""
         for value, code in [(-10, 246), (0, 0), (1, 1), (42, 42), (255, 255), (256, 0), (257, 1)]:
-            with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", str(value)], [return_integer])
-            self.assertEqual(code, context.exception.code)
+            with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+                with self.assertRaises(SystemExit) as context:
+                    main(["SCRIPT", str(value)], [return_integer])
+
+                # check exit code
+                self.assertEqual(code, context.exception.code)
+
+                # check stdout
+                stdout.seek(0)
+                self.assertEqual("", stdout.read())
 
     def test_060_task_returns_boolean(self):
         """Should exit with task boolean return value"""
-        with self.assertRaises(SystemExit) as context:
-            main(["SCRIPT", "--value"], [return_boolean])
-        self.assertEqual(0, context.exception.code)
+        with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+            with self.assertRaises(SystemExit) as context:
+                main(["SCRIPT", "--value"], [return_boolean])
 
-        with self.assertRaises(SystemExit) as context:
-            main(["SCRIPT", "--no-value"], [return_boolean])
-        self.assertEqual(1, context.exception.code)
+            # check exit code
+            self.assertEqual(0, context.exception.code)
+
+            # check stdout
+            stdout.seek(0)
+            self.assertEqual("", stdout.read())
+
+        with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+            with self.assertRaises(SystemExit) as context:
+                main(["SCRIPT", "--no-value"], [return_boolean])
+
+            # check exit code
+            self.assertEqual(1, context.exception.code)
+
+            # check stdout
+            stdout.seek(0)
+            self.assertEqual("", stdout.read())
