@@ -2,6 +2,7 @@ import inspect
 import collections
 
 from .decorator import decorator
+from .log import logger
 
 __all__ = ["dependency", "get_plugin_instance", "BasePlugin", "Plugin", "CustomPlugin"]
 _yaz_plugin_classes = None
@@ -48,8 +49,23 @@ def get_plugin_list():
                 get_recursively(plugin, plugin_list)
             return plugin_list
 
+        def include_class(candidate, classes):
+            for cls in classes:
+                if candidate is cls:
+                    continue
+
+                if issubclass(cls, candidate):
+                    return False
+
+            return True
+
         def get_plugin_type(qualname, plugins):
             classes = sorted(plugins, key=lambda plugin: plugin.yaz_get_ordinal())
+
+            # exclude classes that are implicitly included as parent classes
+            classes = [cls for cls in classes if include_class(cls, classes)]
+            logger.debug("New plugin class \"%s\" extending %s", qualname, [cls for cls in classes])
+
             return type(qualname, (Final,) + tuple(classes), {})
 
         # find all Plugin classes recursively

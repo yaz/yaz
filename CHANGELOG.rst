@@ -13,6 +13,8 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 - Changed: optional boolean arguments allow both --check and --no-check flags
   regardless of the default value
   `[#6] <https://github.com/boudewijn-zicht/yaz/issues/6>`_
+- Fixed: allow normal class extension for plugin classes
+  `[#4] <https://github.com/boudewijn-zicht/yaz/issues/4>`_
 
 1.0.3
 -----

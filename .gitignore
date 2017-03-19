@@ -2,6 +2,7 @@
 *~
 /.coverage
 /.idea/
+/.noseids
 /cover/
 /yaz.egg-info
 __pycache__

@@ -3,6 +3,7 @@ import yaz
 
 from yaz.test.extension.dependencyinjection import Food, MoreFood
 from yaz.test.extension.pluginordinal import base as Orginal
+from yaz.test.extension.pluginextension import Earth, earth_base_class, earth_class, earth_base_class_extension, earth_custom_class, earth_class_extension, earth_custom_class_extension
 
 
 class TestPlugin(unittest.TestCase):
@@ -22,3 +23,15 @@ class TestPlugin(unittest.TestCase):
         """Should follow the ordinal when creating the plugin type"""
         ordinal = yaz.get_plugin_instance(Orginal)
         self.assertEqual(["low (8)", "custom (128)", "default (256)", "base (512)", "high (1024)"], ordinal.stack())
+
+    def test_040_plugin_extension(self):
+        """Should allow plugins to extend each other"""
+        earth = yaz.get_plugin_instance(Earth)
+        self.assertIsInstance(earth, earth_base_class)
+        self.assertIsInstance(earth, earth_base_class_extension)
+        self.assertIsInstance(earth, earth_class)
+        self.assertIsInstance(earth, earth_class_extension)
+        self.assertIsInstance(earth, earth_custom_class)
+        self.assertIsInstance(earth, earth_custom_class_extension)
+        self.assertIsInstance(earth, Earth)
+        self.assertEqual(["Earth(earth_custom_class)", "Earth(yaz.CustomPlugin)", "Earth(earth_class)", "Earth(yaz.Plugin)", "Earth(earth_base_class)", "Earth(yaz.BasePlugin)"], earth.chain())
