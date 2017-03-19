@@ -5,8 +5,39 @@ from .loader import load
 from .parser import Parser
 from .task import get_task_tree
 
+__all__ = ["main"]
+
 
 def main(argv=None, white_list=None, load_yaz_extension=True):
+    """The entry point for a yaz script
+
+    This will almost always be called from a python script in
+    the following manner:
+
+        if __name__ == "__main__":
+            yaz.main()
+
+    This function will perform the following steps:
+
+    1. It will load any additional python code from
+       the yaz_extension python module located in the
+       ~/.yaz directory when LOAD_YAZ_EXTENSION is True
+       and the yaz_extension module exists
+
+    2. It collects all yaz tasks and plugins.  When WHITE_LIST
+       is a non-empty list, only the tasks and plugins located
+       therein will be considered
+
+    3. It will parse arguments from ARGV, or the command line
+       when ARGV is not given, resulting in a yaz task or a parser
+       help message.
+
+    4. When a suitable task is found, this task is executed.  In
+       case of a task which is part of a plugin, i.e. class, then
+       this plugin is initialized, possibly resulting in other
+       plugins to also be initialized if there are marked as
+       `@yaz.dependency`.
+    """
     assert argv is None or isinstance(argv, list), type(argv)
     assert white_list is None or isinstance(white_list, list), type(white_list)
     assert isinstance(load_yaz_extension, bool), type(load_yaz_extension)

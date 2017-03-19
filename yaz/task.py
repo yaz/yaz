@@ -7,8 +7,13 @@ from .decorator import decorator
 from .log import logger
 from .plugin import BasePlugin, get_plugin_instance, get_plugin_list
 
+__all__ = ["task", "get_task_tree"]
+_task_list = {}
+
 
 class Task:
+    """The Task class is created for every @yaz.task found"""
+
     class Documentation:
         def __init__(self, full):
             if full:
@@ -38,11 +43,18 @@ class Task:
 
     @property
     def plugin_documentation(self):
+        """Returns documentation for the plugin class"""
         return self.Documentation(inspect.getdoc(self.plugin_class))
 
     @property
     def documentation(self):
+        """Returns documentation for the task function"""
         return self.Documentation(inspect.getdoc(self.func))
+
+    @property
+    def qualified_name(self):
+        """Returns the __qualname__ of this Task"""
+        return self.func.__qualname__
 
     def __call__(self, **kwargs):
         """Prepare dependencies and call this Task"""
@@ -70,10 +82,6 @@ class Task:
 
         return result
 
-    def get_qualified_name(self):
-        """Returns the __qualname__ of this Task"""
-        return self.func.__qualname__
-
     def get_parameters(self):
         """Returns a list of parameters"""
         sig = inspect.signature(self.func)
@@ -92,22 +100,30 @@ class Task:
             return default
 
     def __str__(self):
-        return self.get_qualified_name()
-
-
-_task_list = {}
+        return self.qualified_name
 
 
 def get_task_tree(white_list=None):
+    """Returns a tree of Task instances
+
+    The tree is comprised of dictionaries containing strings for
+    keys and either dictionaries or Task instances for values.
+
+    When WHITE_LIST is given, only the tasks and plugins in this
+    list will become part of the task tree.  The WHITE_LIST may
+    contain either strings, corresponding to the task of plugin
+    __qualname__, or, preferable, the WHITE_LIST contains
+    links to the task function or plugin class instead.
+    """
     assert white_list is None or isinstance(white_list, list), type(white_list)
 
     if white_list is not None:
         white_list = set(item if isinstance(item, str) else item.__qualname__ for item in white_list)
 
-    tree = dict((task.get_qualified_name(), task)
+    tree = dict((task.qualified_name, task)
                 for task
                 in _task_list.values()
-                if white_list is None or task.get_qualified_name() in white_list)
+                if white_list is None or task.qualified_name in white_list)
 
     plugins = get_plugin_list()
     for plugin in [plugin for plugin in plugins.values() if white_list is None or plugin.__qualname__ in white_list]:
@@ -132,45 +148,25 @@ def get_task_tree(white_list=None):
 
 @decorator
 def task(func, **config):
-    """Make a method into a Yaz task.
+    """Declare a function or method to be a Yaz task
 
-    @task
-    def talk(message="Hello World!"):
+    @yaz.task
+    def talk(message: str = "Hello World!"):
         return message
 
-    # Or... group multiple tasks together
+    Or... group multiple tasks together
 
-    # class Tools(Yaz.Plugin):
-    #     @task
-    #     def say(self, message="Hello World!"):
-    #         return message
+    class Tools(yaz.Plugin):
+        @yaz.task
+        def say(self, message: str = "Hello World!"):
+            return message
 
-    #     @task(choices=dict(option=["A", "B", "C"]))
-    #     def choose(self, option="A"):
-    #         return option
+        @yaz.task(option__choices=["A", "B", "C"])
+        def choose(self, option: str = "A"):
+            return option
     """
-    # @functools.wraps(func)
-    # def wrapper(*args, **kwargs):
-    #     return func(*args, **kwargs)
-    # verbose = self.yaz.verbose
-    # if verbose:
-    #     start = datetime.datetime.now()
-    #     print(self.render("{% color '', '', 'reverse' %}>>> {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ sourcefile }}",
-    #                       dict(plugin=self, task=func, sourcefile=inspect.getsourcefile(func))))
-    # try:
-    #     return func(self, *args, **kwargs)
-    # except Exception as exception:
-    #     if verbose:
-    #         print(self.render("{% color '', '', 'reverse' %}!!! {{ plugin.__class__.__name__ }} {{ exception }}{% endcolor %}",
-    #                           dict(plugin=self, task=func, sourcefile=repr(exception))))
-    #     raise
-    # finally:
-    #     if verbose:
-    #         stop = datetime.datetime.now()
-    #         print(self.render("{% color '', '', 'reverse' %}<<< {{ plugin.__class__.__name__ }} {{ task.__name__ }}{% endcolor %} {{ duration }}",
-    #                           dict(plugin=self, task=func, duration=stop - start)))
     if func.__name__ == func.__qualname__:
-        assert not func.__qualname__ in _task_list, "Can not define the same task {} twice".format(func.__qualname__)
+        assert not func.__qualname__ in _task_list, "Can not define the same task \"{}\" twice".format(func.__qualname__)
         _task_list[func.__qualname__] = Task(plugin_class=None, func=func, config=config)
     else:
         func.yaz_task_config = config

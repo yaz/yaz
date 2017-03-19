@@ -2,6 +2,8 @@ import importlib
 import os.path
 import sys
 
+__all__ = ["load"]
+
 
 def load(directory_name, module_name):
     """Try to load and return a module

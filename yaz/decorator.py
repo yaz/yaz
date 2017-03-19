@@ -1,3 +1,5 @@
+__all__ = ["decorator"]
+
 def decorator(decorator_func):
     """Allows a decorator to be called with or without keyword arguments."""
     assert callable(decorator_func), type(decorator_func)

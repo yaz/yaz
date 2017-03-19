@@ -1,8 +1,17 @@
 import argparse
 import re
 
+__all__ = ["Parser"]
+
 
 class Parser(argparse.ArgumentParser):
+    """Yaz specific ArgumentParser
+
+    Given a collection of yaz.tasks, an ArgumentParser is
+    constructed.  This ArgumentParser will subsequently be
+    used to handle arguments from the command line.
+    """
+
     def __init__(self, *args, **kwargs):
         kwargs["formatter_class"] = argparse.RawDescriptionHelpFormatter
         super().__init__(*args, **kwargs)
