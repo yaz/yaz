@@ -16,7 +16,7 @@ class Parser(argparse.ArgumentParser):
         kwargs["formatter_class"] = argparse.RawDescriptionHelpFormatter
         super().__init__(*args, **kwargs)
 
-    def _format_name(self, name: str, prefix: str = "", postfix: str = ""):
+    def _format_name(self, name: str, prefix_short: str = "", prefix_long: str = ""):
         # todo: cleanup below code.  it does what it needs to do, but is not very pretty
         name = re.sub(r"([^A-Z]+)([A-Z]+)", r"\1-\2", name)
         name = re.sub(r"_", r"-", name)
@@ -24,7 +24,14 @@ class Parser(argparse.ArgumentParser):
         name = re.sub(r"^[-]+", r"", name)
         name = re.sub(r"[-]+$", r"", name)
 
-        return "".join([prefix, name.lower(), postfix])
+        if len(name) == 1:
+            return "".join([prefix_short, name.lower()])
+
+        elif len(name) > 1:
+            return "".join([prefix_long, name.lower()])
+
+        else:
+            return ""
 
     def _add_task(self, parser, task):
         if __debug__:
@@ -35,45 +42,36 @@ class Parser(argparse.ArgumentParser):
         parameter_map = {}
 
         for parameter in task.get_parameters():
-            args = (self._format_name(parameter.name),)
+            formatted_name = self._format_name(parameter.name)
+            args = (formatted_name,)
             kwargs = {
                 "help": task.get_configuration("{}__help".format(parameter.name)),
                 "choices": task.get_configuration("{}__choices".format(parameter.name)),
             }
 
             if parameter.default is not parameter.empty:
-                args = (self._format_name(parameter.name, "-" if len(parameter.name) == 1 else "--"),)
+                args = (self._format_name(parameter.name, "-", "--"),)
                 if not kwargs["help"]:
                     kwargs["help"] = "defaults to {}={!r}".format(parameter.name, parameter.default)
-                kwargs["default"] = parameter.default
                 kwargs["dest"] = parameter.name
+                parser.set_defaults(**{parameter.name: parameter.default})
 
             type_ = task.get_configuration("{}__type".format(parameter.name), str if parameter.annotation is parameter.empty else parameter.annotation)
             if type_ is bool:
-                if parameter.default is parameter.empty:
-                    group = parser.add_mutually_exclusive_group(required=True)
-                    group.add_argument(
-                        self._format_name(parameter.name, "-" if len(parameter.name) == 1 else "--"),
-                        dest=parameter.name,
-                        action="store_true",
-                        help="{}, pass this flag to set to True".format(kwargs["help"])
-                    )
-                    group.add_argument(
-                        self._format_name(parameter.name, "--no-"),
-                        dest=parameter.name,
-                        action="store_false",
-                        help="{}, pass this flag to set to False".format(kwargs["help"])
-                    )
-                    continue
-
-                else:
-                    if parameter.default:
-                        args = (self._format_name(parameter.name, "--no-"),)
-                        kwargs["action"] = "store_false"
-                        kwargs["help"] = "{}, pass this flag to set to False".format(kwargs["help"])
-                    else:
-                        kwargs["action"] = "store_true"
-                        kwargs["help"] = "{}, pass this flag to set to True".format(kwargs["help"])
+                group = parser.add_mutually_exclusive_group(required=parameter.default is parameter.empty)
+                group.add_argument(
+                    self._format_name(parameter.name, "-", "--"),
+                    dest=parameter.name,
+                    action="store_true",
+                    help="{}, pass this flag to set to True".format(kwargs["help"]) if kwargs["help"] else "pass this flag to set to True"
+                )
+                group.add_argument(
+                    self._format_name(parameter.name, "--no-", "--no-"),
+                    dest=parameter.name,
+                    action="store_false",
+                    help="{}, pass this flag to set to False".format(kwargs["help"]) if kwargs["help"] else "pass this flag to set to False"
+                )
+                continue
 
             elif callable(type_):
                 kwargs["type"] = type_

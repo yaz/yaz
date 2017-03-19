@@ -10,6 +10,10 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
+- Changed: optional boolean arguments allow both --check and --no-check flags
+  regardless of the default value
+  `[#6] <https://github.com/boudewijn-zicht/yaz/issues/6>`_
+
 1.0.3
 -----
 

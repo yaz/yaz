@@ -95,8 +95,10 @@ class TestParser(yaz.TestCase):
         self.assertTrue(caller("required-boolean", "--check"))
         self.assertFalse(caller("required-boolean", "--no-check"))
         self.assertTrue(caller("optional-boolean-true"))
+        self.assertTrue(caller("optional-boolean-true", "--check"))
         self.assertFalse(caller("optional-boolean-true", "--no-check"))
         self.assertFalse(caller("optional-boolean-false"))
+        self.assertFalse(caller("optional-boolean-false", "--no-check"))
         self.assertTrue(caller("optional-boolean-false", "--check"))
 
     def test_090_integer_type_annotation(self):
