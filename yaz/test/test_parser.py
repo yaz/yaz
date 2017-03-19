@@ -1,6 +1,7 @@
+import io
 import os.path
+import unittest.mock
 import yaz
-
 import yaz.test.extension.singlefunction as single_function
 import yaz.test.extension.multiplefunctions as multiple_functions
 import yaz.test.extension.singlemethod as single_method
@@ -128,7 +129,63 @@ class TestParser(yaz.TestCase):
             expected,
             caller("optional-file", "--length", str(len(expected))))
 
-    def test_120_choices_configuration(self):
+    def test_120_plugin_help(self):
+        """Should show plugin help texts from docstring or configuration"""
+        caller = self.get_caller([task_configuration.ConfigurationPlugin])
+
+        with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+            with self.assertRaises(SystemExit):
+                caller("--help")
+
+            stdout.seek(0)
+            output = stdout.read()
+
+        print(output)
+
+        self.assertRegex(output, r"This is the documentation string for the ConfigurationPlugin")
+        self.assertRegex(output, r"This is the documentation for the required_choice task")
+        self.assertRegex(output, r"This is the documentation for the one_line_doc_string task")
+        self.assertRegex(output, r"This is the documentation for the parameter_help task")
+
+        # we expect the first line of the the multi_line_doc_string task, not the rest
+        self.assertRegex(output, r"This is the documentation for the multi_line_doc_string task")
+        self.assertNotRegex(output, r"This is the long description, for example")
+
+    def test_130_task_help__docstring(self):
+        """Should show task help texts from docstring or configuration"""
+        caller = self.get_caller([task_configuration.ConfigurationPlugin])
+
+        with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+            with self.assertRaises(SystemExit):
+                caller("multi-line-doc-string", "--help")
+
+            stdout.seek(0)
+            output = stdout.read()
+
+        print(output)
+
+        self.assertNotRegex(output, r"This is the documentation string for the ConfigurationPlugin")
+        self.assertRegex(output, r"This is the documentation for the multi_line_doc_string task")
+        self.assertRegex(output, r"This is the long description, for example")
+
+    def test_140_task_help__parameter(self):
+        """Should show task help texts from docstring or configuration"""
+        caller = self.get_caller([task_configuration.ConfigurationPlugin])
+
+        with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
+            with self.assertRaises(SystemExit):
+                caller("parameter-help", "--help")
+
+            stdout.seek(0)
+            output = stdout.read()
+
+        print(output)
+
+        self.assertNotRegex(output, r"This is the documentation string for the ConfigurationPlugin")
+        self.assertRegex(output, r"This is the documentation for the parameter_help task")
+        self.assertRegex(output, r"This is the documentation for the choice parameter of the\n.*parameter_help task")
+
+    def test_150_choices_configuration(self):
         """Should accept predefined choices"""
         caller = self.get_caller([task_configuration.ConfigurationPlugin])
 
@@ -136,5 +193,6 @@ class TestParser(yaz.TestCase):
         self.assertTrue(caller("required-choice", "yes"))
 
         # using unavailable choice
-        with self.assertRaises(SystemExit):
-            caller("required-choice", "unavailable")
+        with unittest.mock.patch("sys.stderr", new=io.StringIO()):
+            with self.assertRaises(SystemExit):
+                caller("required-choice", "unavailable")

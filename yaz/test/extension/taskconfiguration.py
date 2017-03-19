@@ -4,7 +4,7 @@ import yaz
 
 
 class ConfigurationPlugin(yaz.Plugin):
-    """TODO: This is the documentation string for the ConfigurationPlugin"""
+    """This is the documentation string for the ConfigurationPlugin"""
 
     choices = {
         "yes": True,
@@ -18,13 +18,12 @@ class ConfigurationPlugin(yaz.Plugin):
         return self.choices[choice]
 
     @yaz.task
-    def task_one_line_doc_string(self):
+    def one_line_doc_string(self):
         """This is the documentation for the one_line_doc_string task"""
-        # todo: needs a unit test
         pass
 
     @yaz.task
-    def task_multi_line_doc_string(self):
+    def multi_line_doc_string(self):
         """
         This is the documentation for the multi_line_doc_string task
 
@@ -32,12 +31,11 @@ class ConfigurationPlugin(yaz.Plugin):
         bla bla,
         etc...
         """
-        # todo: needs a unit test
         pass
 
-    @yaz.task(choice__help="This is the documentation for the choice parameter")
+    @yaz.task(choice__help="This is the documentation for the choice parameter of the parameter_help task")
     def parameter_help(self, choice):
-        # todo: needs a unit test
+        """This is the documentation for the parameter_help task"""
         pass
 
 
