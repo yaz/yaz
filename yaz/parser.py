@@ -36,8 +36,8 @@ class Parser(argparse.ArgumentParser):
     def _add_task(self, parser, task):
         if __debug__:
             from .task import Task
-            assert isinstance(parser, Parser)
-            assert isinstance(task, Task)
+            assert isinstance(parser, Parser), type(parser)
+            assert isinstance(task, Task), type(task)
 
         parameter_map = {}
 
@@ -117,12 +117,12 @@ class Parser(argparse.ArgumentParser):
             self._add_task(parser, task)
 
     def add_task_tree(self, task_tree):
-        assert isinstance(task_tree, dict)
+        assert isinstance(task_tree, dict), type(task_tree)
         self._add_task_tree_node(self, task_tree)
 
     def parse_arguments(self, argv):
-        assert isinstance(argv, list)
-        assert all(isinstance(arg, str) for arg in argv)
+        assert isinstance(argv, list), type(argv)
+        assert all(isinstance(arg, str) for arg in argv), [type(arg) for arg in argv]
         kwargs = vars(self.parse_args(argv[1:]))
         task = kwargs.pop("yaz_task", None)
 
