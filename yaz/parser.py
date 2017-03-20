@@ -41,8 +41,7 @@ class Parser(argparse.ArgumentParser):
 
         parameter_map = {}
 
-        for parameter in task.get_parameters():
-            formatted_name = self._format_name(parameter.name)
+        for formatted_name, parameter in sorted((self._format_name(parameter.name), parameter) for parameter in task.get_parameters()):
             args = (formatted_name,)
             kwargs = {
                 "help": task.get_configuration("{}__help".format(parameter.name)),
