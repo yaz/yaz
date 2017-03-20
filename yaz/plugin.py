@@ -66,7 +66,7 @@ def get_plugin_list():
             classes = [cls for cls in classes if include_class(cls, classes)]
             logger.debug("New plugin class \"%s\" extending %s", qualname, [cls for cls in classes])
 
-            return type(qualname, (Final,) + tuple(classes), {})
+            return type(qualname, tuple(classes) + (Final,), {})
 
         # find all Plugin classes recursively
         plugin_list = get_recursively(BasePlugin, collections.defaultdict(list))
