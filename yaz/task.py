@@ -84,13 +84,57 @@ class Task:
 
     def get_parameters(self):
         """Returns a list of parameters"""
-        sig = inspect.signature(self.func)
-        for index, parameter in enumerate(sig.parameters.values()):
-            if index == 0 and self.plugin_class is not None:
-                # skip SELF parameter
-                continue
+        if self.plugin_class is None:
+            sig = inspect.signature(self.func)
+            for index, parameter in enumerate(sig.parameters.values()):
+                if not parameter.kind in [inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD]:
+                    # skip *args and **kwargs parameters
+                    logger.warning("Parameter %s of task %s has been skipped", parameter, self.func)
+                    continue
 
-            yield parameter
+                yield parameter
+
+        else:
+            var_positional_index_seen = 0
+            var_keyword_seen = set()
+
+            for cls in inspect.getmro(self.plugin_class):
+                if issubclass(cls, BasePlugin) and hasattr(cls, self.func.__name__):
+                    var_positional_found = False    # if signature contains *args
+                    var_keyword_found = False       # if signature contains **kwargs
+                    sig = inspect.signature(getattr(cls, self.func.__name__))
+                    for index, parameter in enumerate(sig.parameters.values()):
+                        if index == 0:
+                            # skip "self" parameter
+                            continue
+
+                        if parameter.kind == inspect.Parameter.VAR_POSITIONAL:
+                            # found "*args" parameter.  we will continue to the next class in the mro
+                            # to add any positional parameters we have not yet used (i.e. whose
+                            # index we have not yet seen)
+                            var_positional_found = True
+                            continue
+
+                        if parameter.kind == inspect.Parameter.VAR_KEYWORD:
+                            # found "**kwargs" parameter.  we will continue to the next class in the mro
+                            # to add any keyword parameters we have not yet used (i.e. whose name
+                            # we have not yet seen)
+                            var_keyword_found = True
+                            continue
+
+                        if not (parameter.name in var_keyword_seen or index < var_positional_index_seen):
+                            if parameter.kind == inspect.Parameter.POSITIONAL_ONLY:
+                                var_positional_index_seen = index
+
+                            if parameter.kind in [inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD]:
+                                var_keyword_seen.add(parameter.name)
+
+                            yield parameter
+
+                    # when no "*args" or "**kwargs" is found, we do not need to look at the
+                    # next class in the mro
+                    if not (var_positional_found or var_keyword_found):
+                        break
 
     def get_configuration(self, key, default=None):
         """Returns the configuration for KEY"""
@@ -141,6 +185,7 @@ def get_task_tree(white_list=None):
             node = node[name]
 
         for func in tasks:
+            logger.debug("Found task %s", func)
             node[func.__name__] = Task(plugin_class=plugin, func=func, config=func.yaz_task_config)
 
     return tree
@@ -167,6 +212,7 @@ def task(func, **config):
     """
     if func.__name__ == func.__qualname__:
         assert not func.__qualname__ in _task_list, "Can not define the same task \"{}\" twice".format(func.__qualname__)
+        logger.debug("Found task %s", func)
         _task_list[func.__qualname__] = Task(plugin_class=None, func=func, config=config)
     else:
         func.yaz_task_config = config
