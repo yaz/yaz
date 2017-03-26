@@ -39,9 +39,17 @@ class Parser(argparse.ArgumentParser):
             assert isinstance(parser, Parser), type(parser)
             assert isinstance(task, Task), type(task)
 
+        # get all parameters with their formatted name
+        parameters = [(index if parameter.default is parameter.empty else 999, self._format_name(parameter.name), parameter)
+                      for index, parameter
+                      in enumerate(task.get_parameters())]
+
+        # sort all parameters, either by their index (for required parameters) or their name (for optional parameters)
+        parameters = sorted(parameters)
+
         parameter_map = {}
 
-        for formatted_name, parameter in sorted((self._format_name(parameter.name), parameter) for parameter in task.get_parameters()):
+        for index, formatted_name, parameter in parameters:
             args = (formatted_name,)
             kwargs = {
                 "help": task.get_configuration("{}__help".format(parameter.name)),
