@@ -10,6 +10,9 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
+1.1.0
+-----
+
 - Added: **kwargs for tasks in plugins
   `[#2] <https://github.com/boudewijn-zicht/yaz/issues/2>`_
 
