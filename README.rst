@@ -133,7 +133,7 @@ TODO
 - todo: explain coroutines / asyncio
 - todo: explain available base plugins: yaz_templating_plugin and yaz_scripting_plugin
 
-Maintainer(s)
--------------
+Maintainer
+----------
 
 - Boudewijn Schoon <boudewijn@zicht.nl>
