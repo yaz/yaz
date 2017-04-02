@@ -10,14 +10,11 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
-- Added: *args and **kwargs for tasks in plugins
+- Added: **kwargs for tasks in plugins
   `[#2] <https://github.com/boudewijn-zicht/yaz/issues/2>`_
 
-    Having *args in your task signature will automatically add additional
-    positional parameters from the next class in the __mro__.
-
-    Similarly, **kwargs in your task signature will automatically add
-    additional keyword paramaters from the next class in the __mro__.
+    Having **kwargs in your task signature will automatically add
+    different keyword parameters from the next class in the __mro__.
 
 - Changed: optional boolean arguments allow both --check and --no-check flags
   regardless of the default value

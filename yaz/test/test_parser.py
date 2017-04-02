@@ -197,32 +197,3 @@ class TestParser(yaz.TestCase):
         with unittest.mock.patch("sys.stderr", new=io.StringIO()):
             with self.assertRaises(SystemExit):
                 caller("required-choice", "unavailable")
-
-    def test_050_task_overrides(self):
-        """Should be able to use *args and **kwargs to get parameters from super classes"""
-        caller = self.get_caller([task_overrides.Water])
-
-        expected = ["console-POS1", "console-POS1", "console-POS3",
-                    "alt-POS_OR_KEY1", "alt-POS_OR_KEY2", "POS_OR_KEY3",
-                    "alt-KEY1", "alt-KEY2", "KEY3", "EXTRA2", "EXTRA1"]
-        self.assertEqual(expected, caller("console-POS1", "console-POS1", "console-POS3"))
-
-        expected = ["console-POS1", "console-POS1", "console-POS3",
-                    "console-POS_OR_KEY1", "console-POS_OR_KEY2", "console-POS_OR_KEY3",
-                    "console-KEY1", "console-KEY2", "console-KEY3",
-                    "console-EXTRA2", "console-EXTRA1"]
-        self.assertEqual(expected,
-                         caller(
-                             "console-POS1",
-                             "console-POS1",
-                             "console-POS3",
-                             "--pos-or-key1", "console-POS_OR_KEY1",
-                             "--pos-or-key2", "console-POS_OR_KEY2",
-                             "--pos-or-key3", "console-POS_OR_KEY3",
-                             "--key1", "console-KEY1",
-                             "--key2", "console-KEY2",
-                             "--key3", "console-KEY3",
-                             "--extra1", "console-EXTRA1",
-                             "--extra2", "console-EXTRA2"))
-
-        assert False

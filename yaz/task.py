@@ -87,32 +87,23 @@ class Task:
         if self.plugin_class is None:
             sig = inspect.signature(self.func)
             for index, parameter in enumerate(sig.parameters.values()):
-                if not parameter.kind in [inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD]:
-                    # skip *args and **kwargs parameters
-                    logger.warning("Parameter %s of task %s has been skipped", parameter, self.func)
-                    continue
+                if not parameter.kind in [parameter.POSITIONAL_ONLY, parameter.KEYWORD_ONLY, parameter.POSITIONAL_OR_KEYWORD]:
+                    raise RuntimeError("Task {} contains an unsupported {} parameter".format(parameter, parameter.kind))
 
                 yield parameter
 
         else:
-            var_positional_index_seen = 0
             var_keyword_seen = set()
 
             for cls in inspect.getmro(self.plugin_class):
                 if issubclass(cls, BasePlugin) and hasattr(cls, self.func.__name__):
-                    var_positional_found = False    # if signature contains *args
-                    var_keyword_found = False       # if signature contains **kwargs
-                    sig = inspect.signature(getattr(cls, self.func.__name__))
+                    func = getattr(cls, self.func.__name__)
+                    logger.debug("Found method %s from class %s", func, cls)
+                    var_keyword_found = False
+                    sig = inspect.signature(func)
                     for index, parameter in enumerate(sig.parameters.values()):
                         if index == 0:
                             # skip "self" parameter
-                            continue
-
-                        if parameter.kind == inspect.Parameter.VAR_POSITIONAL:
-                            # found "*args" parameter.  we will continue to the next class in the mro
-                            # to add any positional parameters we have not yet used (i.e. whose
-                            # index we have not yet seen)
-                            var_positional_found = True
                             continue
 
                         if parameter.kind == inspect.Parameter.VAR_KEYWORD:
@@ -122,18 +113,18 @@ class Task:
                             var_keyword_found = True
                             continue
 
-                        if not (parameter.name in var_keyword_seen or index < var_positional_index_seen):
-                            if parameter.kind == inspect.Parameter.POSITIONAL_ONLY:
-                                var_positional_index_seen = index
+                        if parameter.kind in [parameter.POSITIONAL_ONLY, parameter.VAR_POSITIONAL]:
+                            raise RuntimeError("Task {} contains an unsupported parameter \"{}\"".format(func, parameter))
 
-                            if parameter.kind in [inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD]:
-                                var_keyword_seen.add(parameter.name)
+                        if not parameter.name in var_keyword_seen:
+                            var_keyword_seen.add(parameter.name)
 
+                            logger.debug("Found parameter %s (%s)", parameter, parameter.kind)
                             yield parameter
 
-                    # when no "*args" or "**kwargs" is found, we do not need to look at the
-                    # next class in the mro
-                    if not (var_positional_found or var_keyword_found):
+                    # we only need to look at the next class in the mro
+                    # when "**kwargs" is found
+                    if not var_keyword_found:
                         break
 
     def get_configuration(self, key, default=None):
