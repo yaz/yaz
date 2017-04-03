@@ -1,10 +1,29 @@
+#!/usr/bin/env python3
+
 import unittest
 import unittest.mock
 import io
+import yaz
 
-from yaz import main
-from yaz.test.extension.singlefunction import say
-from yaz.test.extension.errorfunction import yaz_error, return_boolean, return_integer
+
+@yaz.task
+def main_message_task(message="Hello World!"):
+    return message
+
+
+@yaz.task
+def main_raise_error_task(message: str = "There was an error", return_code: int = 1):
+    raise yaz.Error(message, return_code)
+
+
+@yaz.task
+def main_return_integer_task(value: int):
+    return value
+
+
+@yaz.task
+def main_return_boolean_task(value: bool):
+    return value
 
 
 class TestMain(unittest.TestCase):
@@ -12,7 +31,7 @@ class TestMain(unittest.TestCase):
         """Should run task, print, and exit"""
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", "--message", "Echo!"], [say])
+                yaz.main(["SCRIPT", "--message", "Echo!"], [main_message_task])
 
             # check exit code
             self.assertEqual(0, context.exception.code)
@@ -35,7 +54,7 @@ subcommands:
 
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT"], [])
+                yaz.main(["SCRIPT"], [])
 
             # check exit code
             self.assertEqual(1, context.exception.code)
@@ -56,7 +75,7 @@ optional arguments:
 
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", "--help"], [say])
+                yaz.main(["SCRIPT", "--help"], [main_message_task])
 
             # check exit code
             self.assertEqual(0, context.exception.code)
@@ -69,7 +88,7 @@ optional arguments:
         """Should exit with return code given by yaz.Error"""
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", "--message", "There was a very specific error", "--return-code", "42"], [yaz_error])
+                yaz.main(["SCRIPT", "--message", "There was a very specific error", "--return-code", "42"], [main_raise_error_task])
 
             # check exit code
             self.assertEqual(42, context.exception.code)
@@ -83,7 +102,7 @@ optional arguments:
         for value, code in [(-10, 246), (0, 0), (1, 1), (42, 42), (255, 255), (256, 0), (257, 1)]:
             with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
                 with self.assertRaises(SystemExit) as context:
-                    main(["SCRIPT", str(value)], [return_integer])
+                    yaz.main(["SCRIPT", str(value)], [main_return_integer_task])
 
                 # check exit code
                 self.assertEqual(code, context.exception.code)
@@ -96,7 +115,7 @@ optional arguments:
         """Should exit with task boolean return value"""
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", "--value"], [return_boolean])
+                yaz.main(["SCRIPT", "--value"], [main_return_boolean_task])
 
             # check exit code
             self.assertEqual(0, context.exception.code)
@@ -107,7 +126,7 @@ optional arguments:
 
         with unittest.mock.patch("sys.stdout", new=io.StringIO()) as stdout:
             with self.assertRaises(SystemExit) as context:
-                main(["SCRIPT", "--no-value"], [return_boolean])
+                yaz.main(["SCRIPT", "--no-value"], [main_return_boolean_task])
 
             # check exit code
             self.assertEqual(1, context.exception.code)

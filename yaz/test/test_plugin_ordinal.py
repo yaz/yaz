@@ -3,7 +3,7 @@
 import yaz
 
 
-class Ordinal(yaz.Plugin):
+class PluginOrdinal(yaz.Plugin):
     @staticmethod
     def yaz_get_ordinal():
         return 8
@@ -13,10 +13,10 @@ class Ordinal(yaz.Plugin):
         return ["low ({})".format(low.yaz_get_ordinal())] + super().stack()
 
 
-low = Ordinal
+low = PluginOrdinal
 
 
-class Ordinal(yaz.Plugin):
+class PluginOrdinal(yaz.Plugin):
     @staticmethod
     def yaz_get_ordinal():
         return 1024
@@ -26,34 +26,42 @@ class Ordinal(yaz.Plugin):
         return ["high ({})".format(high.yaz_get_ordinal())]
 
 
-high = Ordinal
+high = PluginOrdinal
 
 
-class Ordinal(yaz.Plugin):
+class PluginOrdinal(yaz.Plugin):
     @yaz.task
     def stack(self):
         return ["default ({})".format(default.yaz_get_ordinal())] + super().stack()
 
 
-default = Ordinal
+default = PluginOrdinal
 
 
-class Ordinal(yaz.BasePlugin):
+class PluginOrdinal(yaz.BasePlugin):
     @yaz.task
     def stack(self):
         return ["base ({})".format(base.yaz_get_ordinal())] + super().stack()
 
 
-base = Ordinal
+base = PluginOrdinal
 
 
-class Ordinal(yaz.CustomPlugin):
+class PluginOrdinal(yaz.CustomPlugin):
     @yaz.task
     def stack(self):
         return ["custom ({})".format(custom.yaz_get_ordinal())] + super().stack()
 
 
-custom = Ordinal
+custom = PluginOrdinal
+
+
+class Test(yaz.TestCase):
+    def test_010(self):
+        """Should follow the ordinal when creating the plugin type"""
+        ordinal = yaz.get_plugin_instance(PluginOrdinal)
+        self.assertEqual(["low (8)", "custom (128)", "default (256)", "base (512)", "high (1024)"], ordinal.stack())
+
 
 if __name__ == "__main__":
     yaz.main()
