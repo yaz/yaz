@@ -10,6 +10,8 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
+- Fixed: an obsolete import statement causing the unit tests to fail
+
 1.1.0
 -----
 

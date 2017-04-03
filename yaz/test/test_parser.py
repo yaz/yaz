@@ -9,7 +9,6 @@ import yaz.test.extension.multiplemethods as multiple_methods
 import yaz.test.extension.namingconvention as naming_convention
 import yaz.test.extension.typeannotation as type_annotation
 import yaz.test.extension.taskconfiguration as task_configuration
-import yaz.test.extension.taskoverrides as task_overrides
 
 
 class TestParser(yaz.TestCase):
