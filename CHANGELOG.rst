@@ -10,7 +10,13 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 [Unreleased]
 ------------
 
+- Nothing so far
+
+1.1.1
+-----
+
 - Fixed: an obsolete import statement causing the unit tests to fail
+- Moves all unit tests to separate files for readability
 
 1.1.0
 -----
