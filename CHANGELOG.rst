@@ -12,6 +12,11 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 - Nothing so far
 
+1.1.2
+-----
+
+- Changed: references to yaz/yaz because the repository changed owner
+
 1.1.1
 -----
 
@@ -22,29 +27,29 @@ and this project adheres to `Semantic Versioning <http://semver.org/>`_.
 -----
 
 - Added: **kwargs for tasks in plugins
-  `[#2] <https://github.com/boudewijn-zicht/yaz/issues/2>`_
+  `[#2] <https://github.com/yaz/yaz/issues/2>`_
 
     Having **kwargs in your task signature will automatically add
     different keyword parameters from the next class in the __mro__.
 
 - Changed: optional boolean arguments allow both --check and --no-check flags
   regardless of the default value
-  `[#6] <https://github.com/boudewijn-zicht/yaz/issues/6>`_
+  `[#6] <https://github.com/yaz/yaz/issues/6>`_
 - Fixed: allow normal class extension for plugin classes
-  `[#4] <https://github.com/boudewijn-zicht/yaz/issues/4>`_
+  `[#4] <https://github.com/yaz/yaz/issues/4>`_
 
 1.0.3
 -----
 
 - Added: log messages when a task starts and ends, using info level
 - Added: ``yaz.version`` containing the current version string
-  `[#3] <https://github.com/boudewijn-zicht/yaz/issues/3>`_
+  `[#3] <https://github.com/yaz/yaz/issues/3>`_
 - Changed: when no task is found to execute, exit with 1 (failure) instead of 0 (success)
 - Fixed: arguments with underscores are now printed correctly in the generated
   ``--help`` output
-  `[#7] <https://github.com/boudewijn-zicht/yaz/issues/7>`_
+  `[#7] <https://github.com/yaz/yaz/issues/7>`_
 - Fixed: boolean and integer task return types should not be printed
-  `[#8] <https://github.com/boudewijn-zicht/yaz/issues/8>`_
+  `[#8] <https://github.com/yaz/yaz/issues/8>`_
 
 1.0.2
 -----
