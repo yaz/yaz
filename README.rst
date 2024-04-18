@@ -123,6 +123,13 @@ The above can be called using ``./examples/02_food.py lunch --shout``, resulting
 4. The ``lunch`` method is called and ``yaz.main()`` prints its return value.
 
 
+RUNNING TESTS
+----
+
+1. Make sure the `nose` and `coverage` dependencies are available, i.e. `pip3 install nose coverage`.
+2. Run the tests, i.e. `python3 setup.py test`
+
+   
 TODO
 ----
 

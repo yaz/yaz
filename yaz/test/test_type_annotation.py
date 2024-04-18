@@ -55,6 +55,14 @@ class TypeAnnotation(yaz.Plugin):
         finally:
             file.close()
 
+    @yaz.task
+    def required_literal(self, option: Literal["Yes", 42, 3.14]):
+        return option
+
+    @yaz.task
+    def optional_literal(self, option: Literal["Yes", 42, 3.14] = "Yes"):
+        return option
+
 
 class Test(yaz.TestCase):
     def test_010_string_type_annotation(self):
@@ -93,15 +101,19 @@ class Test(yaz.TestCase):
     def test_050_file_type_annotation(self):
         """Should understand file, i.e. open, type annotation"""
         caller = self.get_caller([TypeAnnotation])
-
         expected = "First line\nSecond line\nThird line"
         self.assertEqual(expected, caller("required-file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")))
         self.assertEqual(expected, caller("optional-file", "--file", os.path.join(os.path.dirname(__file__), "file_type_annotation/input.txt")))
+        with open(__file__) as file:
+            self.assertEqual(file.read(128), caller("optional-file", "--length", "128"))
 
-        expected = "#!/usr/bin/env python3"
-        self.assertEqual(
-            expected,
-            caller("optional-file", "--length", str(len(expected))))
+    def test_060_literal_type_annotation(self):
+        """Should understand string, integer, and float Literal type annotation"""
+        caller = self.get_caller([TypeAnnotation])
+        self.assertEqual("Yes", caller("required-literal", "Yes"))
+        self.assertEqual(42, caller("required-literal", "42"))
+        self.assertEqual(3.14, caller("required-literal", "3.14"))
+        # todo: add optional-literal
 
 
 if __name__ == "__main__":

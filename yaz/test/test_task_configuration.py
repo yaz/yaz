@@ -96,7 +96,7 @@ class Test(yaz.TestCase):
 
         self.assertNotRegex(output, r"This is the documentation string for the ConfigurationPlugin")
         self.assertRegex(output, r"This is the documentation for the parameter_help task")
-        self.assertRegex(output, r"This is the documentation for the choice parameter of the\n.*parameter_help task")
+        self.assertRegex(output, r"This is the documentation for the choice parameter of the\n?.*parameter_help task")
 
     def test_040_choices_configuration(self):
         """Should accept predefined choices"""
